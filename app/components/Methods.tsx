@@ -1,156 +1,205 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useDynamicContext, useIsLoggedIn, useUserWallets } from "@dynamic-labs/sdk-react-core";
-import { isEthereumWallet } from '@dynamic-labs/ethereum'
+import { isEthereumWallet } from '@dynamic-labs/ethereum';
+import {
+  useDynamicContext,
+  useIsLoggedIn,
+  useUserWallets,
+} from '@dynamic-labs/sdk-react-core';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface DynamicMethodsProps {
-	isDarkMode: boolean;
+  isDarkMode: boolean;
 }
 
+// biome-ignore lint/correctness/noUnusedFunctionParameters: let it be for now
 export default function DynamicMethods({ isDarkMode }: DynamicMethodsProps) {
-	const isLoggedIn = useIsLoggedIn();
-	const { sdkHasLoaded, primaryWallet, user } = useDynamicContext();
-	const userWallets = useUserWallets();
-	const [isLoading, setIsLoading] = useState(true);
-	const [result, setResult] = useState('');
-	const [error, setError] = useState<string | null>(null);
-	const [isMounted, setIsMounted] = useState(false);
+  const isLoggedIn = useIsLoggedIn();
+  const { sdkHasLoaded, primaryWallet, user } = useDynamicContext();
+  const userWallets = useUserWallets();
+  const [isLoading, setIsLoading] = useState(true);
+  const [result, setResult] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
+  const safeStringify = (obj: unknown): string => {
+    const seen = new WeakSet();
+    return JSON.stringify(
+      obj,
+      (_key, value) => {
+        if (typeof value === 'object' && value !== null) {
+          if (seen.has(value)) {
+            return '[Circular]';
+          }
+          seen.add(value);
+        }
+        return value;
+      },
+      2
+    );
+  };
 
-	const safeStringify = (obj: unknown): string => {
-		const seen = new WeakSet();
-		return JSON.stringify(
-			obj,
-			(key, value) => {
-				if (typeof value === "object" && value !== null) {
-					if (seen.has(value)) {
-						return "[Circular]";
-					}
-					seen.add(value);
-				}
-				return value;
-			},
-			2
-		);
-	};
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
+  useEffect(() => {
+    if (sdkHasLoaded && isLoggedIn && primaryWallet) {
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+  }, [sdkHasLoaded, isLoggedIn, primaryWallet]);
 
-	useEffect(() => {
-		setIsMounted(true);
-	}, []);
+  function clearResult() {
+    setResult('');
+    setError(null);
+  }
 
-	useEffect(() => {
-		if (sdkHasLoaded && isLoggedIn && primaryWallet) {
-			setIsLoading(false);
-		} else {
-			setIsLoading(true);
-		}
-	}, [sdkHasLoaded, isLoggedIn, primaryWallet]);
+  function showUser() {
+    try {
+      setResult(safeStringify(user));
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to stringify user data'
+      );
+    }
+  }
 
-	function clearResult() {
-		setResult('');
-		setError(null);
-	}
+  function showUserWallets() {
+    try {
+      setResult(safeStringify(userWallets));
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to stringify wallet data'
+      );
+    }
+  }
 
-	function showUser() {
-		try {
-			setResult(safeStringify(user));
-			setError(null);
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to stringify user data');
-		}
-	}
+  async function fetchEthereumPublicClient() {
+    if (!primaryWallet || !isEthereumWallet(primaryWallet)) {
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const result = await primaryWallet.getPublicClient();
+      setResult(safeStringify(result));
+    } catch (error) {
+      setResult(
+        safeStringify({
+          error:
+            error instanceof Error ? error.message : 'Unknown error occurred',
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-	function showUserWallets() {
-		try {
-			setResult(safeStringify(userWallets));
-			setError(null);
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to stringify wallet data');
-		}
-	}
+  async function fetchEthereumWalletClient() {
+    if (!primaryWallet || !isEthereumWallet(primaryWallet)) {
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const result = await primaryWallet.getWalletClient();
+      setResult(safeStringify(result));
+    } catch (error) {
+      setResult(
+        safeStringify({
+          error:
+            error instanceof Error ? error.message : 'Unknown error occurred',
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
+  async function fetchEthereumMessage() {
+    if (!primaryWallet || !isEthereumWallet(primaryWallet)) {
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const result = await primaryWallet.signMessage('Hello World');
+      setResult(safeStringify(result));
+    } catch (error) {
+      setResult(
+        safeStringify({
+          error:
+            error instanceof Error ? error.message : 'Unknown error occurred',
+        })
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-	async function fetchEthereumPublicClient() {
-		if (!primaryWallet || !isEthereumWallet(primaryWallet)) return;
-		try {
-			setIsLoading(true);
-			const result = await primaryWallet.getPublicClient();
-			setResult(safeStringify(result));
-		} catch (error) {
-			setResult(safeStringify({ error: error instanceof Error ? error.message : 'Unknown error occurred' }));
-		} finally {
-			setIsLoading(false);
-		}
-	}
+  return (
+    <>
+      {isMounted && !isLoading && (
+        <Card className="w-full max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              Dynamic Methods
+              <Badge variant="secondary">Connected</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button onClick={showUser} variant="default">
+                Fetch User
+              </Button>
+              <Button onClick={showUserWallets} variant="secondary">
+                Fetch User Wallets
+              </Button>
 
-	async function fetchEthereumWalletClient() {
-		if (!primaryWallet || !isEthereumWallet(primaryWallet)) return;
-		try {
-			setIsLoading(true);
-			const result = await primaryWallet.getWalletClient();
-			setResult(safeStringify(result));
-		} catch (error) {
-			setResult(safeStringify({ error: error instanceof Error ? error.message : 'Unknown error occurred' }));
-		} finally {
-			setIsLoading(false);
-		}
-	}
+              {primaryWallet && isEthereumWallet(primaryWallet) && (
+                <>
+                  <Button onClick={fetchEthereumPublicClient} variant="outline">
+                    Fetch PublicClient
+                  </Button>
+                  <Button onClick={fetchEthereumWalletClient} variant="outline">
+                    Fetch WalletClient
+                  </Button>
+                  <Button onClick={fetchEthereumMessage} variant="outline">
+                    Fetch Message
+                  </Button>
+                </>
+              )}
+            </div>
 
-	async function fetchEthereumMessage() {
-		if (!primaryWallet || !isEthereumWallet(primaryWallet)) return;
-		try {
-			setIsLoading(true);
-			const result = await primaryWallet.signMessage("Hello World");
-			setResult(safeStringify(result));
-		} catch (error) {
-			setResult(safeStringify({ error: error instanceof Error ? error.message : 'Unknown error occurred' }));
-		} finally {
-			setIsLoading(false);
-		}
-	}
+            {(result || error) && (
+              <Card className="bg-muted/50">
+                <CardContent className="p-4">
+                  {error ? (
+                    <pre className="whitespace-pre-wrap break-words max-w-full text-destructive text-sm">
+                      {error}
+                    </pre>
+                  ) : (
+                    <pre className="whitespace-pre-wrap break-words max-w-full text-sm">
+                      {result}
+                    </pre>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
-	return (
-		<>
-			{isMounted && !isLoading && (
-				<div className={`p-5 transition-colors duration-300 ease-in-out flex flex-col items-center ${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-gray-100 text-gray-800'}`}>
-					<div className="flex flex-wrap justify-center">
-						<button className="px-4 py-2.5 m-1.5 border-none rounded cursor-pointer font-bold transition-colors duration-300 ease-in-out bg-blue-500 text-white hover:opacity-80" onClick={showUser}>Fetch User</button>
-						<button className="px-4 py-2.5 m-1.5 border-none rounded cursor-pointer font-bold transition-colors duration-300 ease-in-out bg-blue-500 text-white hover:opacity-80" onClick={showUserWallets}>Fetch User Wallets</button>
-
-						{primaryWallet && isEthereumWallet(primaryWallet) && (
-							<>
-
-								<button type="button" className="px-4 py-2.5 m-1.5 border-none rounded cursor-pointer font-bold transition-colors duration-300 ease-in-out bg-blue-500 text-white hover:opacity-80" onClick={fetchEthereumPublicClient}>
-									Fetch PublicClient
-								</button>
-
-								<button type="button" className="px-4 py-2.5 m-1.5 border-none rounded cursor-pointer font-bold transition-colors duration-300 ease-in-out bg-blue-500 text-white hover:opacity-80" onClick={fetchEthereumWalletClient}>
-									Fetch WalletClient
-								</button>
-
-								<button type="button" className="px-4 py-2.5 m-1.5 border-none rounded cursor-pointer font-bold transition-colors duration-300 ease-in-out bg-blue-500 text-white hover:opacity-80" onClick={fetchEthereumMessage}>
-									Fetch Message
-								</button>
-							</>
-						)}
-					</div>
-					{(result || error) && (
-						<div className="justify-center w-full max-w-4xl p-4 rounded bg-black bg-opacity-10 break-words overflow-x-auto">
-							{error ? (
-								<pre className="whitespace-pre-wrap break-words max-w-full text-red-600">{error}</pre>
-							) : (
-								<pre className="whitespace-pre-wrap break-words max-w-full">{result}</pre>
-							)}
-						</div>
-					)}
-					{(result || error) && (
-						<div className="flex justify-center mt-2.5">
-							<button className="px-4 py-2.5 m-1.5 border-none rounded cursor-pointer font-bold transition-colors duration-300 ease-in-out bg-blue-500 text-white hover:opacity-80" onClick={clearResult}>Clear</button>
-						</div>
-					)}
-				</div>
-			)}
-		</>
-	);
+            {(result || error) && (
+              <div className="flex justify-center">
+                <Button onClick={clearResult} variant="destructive" size="sm">
+                  Clear
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </>
+  );
 }

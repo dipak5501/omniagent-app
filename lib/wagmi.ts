@@ -1,6 +1,5 @@
-
-import { http, createConfig } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { createConfig, http } from 'wagmi';
+import { mainnet } from 'wagmi/chains';
 
 export const config = createConfig({
   // make sure to update the chains in the dashboard
@@ -12,7 +11,7 @@ export const config = createConfig({
   },
 });
 
-declare module "wagmi" {
+declare module 'wagmi' {
   interface Register {
     config: typeof config;
   }

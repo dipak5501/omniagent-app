@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
 
 const checkIsDarkSchemePreferred = (): boolean => {
-  if (typeof window !== "undefined") {
-    return window.matchMedia?.("(prefers-color-scheme:dark)")?.matches ?? false;
+  if (typeof window !== 'undefined') {
+    return window.matchMedia?.('(prefers-color-scheme:dark)')?.matches ?? false;
   }
   return false;
 };
@@ -14,12 +14,12 @@ export function useDarkMode() {
 
   useEffect(() => {
     const darkModeMediaQuery = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      '(prefers-color-scheme: dark)'
     );
     const handleChange = () => setIsDarkMode(checkIsDarkSchemePreferred());
 
-    darkModeMediaQuery.addEventListener("change", handleChange);
-    return () => darkModeMediaQuery.removeEventListener("change", handleChange);
+    darkModeMediaQuery.addEventListener('change', handleChange);
+    return () => darkModeMediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   return { isDarkMode, toggleDarkMode: () => setIsDarkMode(!isDarkMode) };
