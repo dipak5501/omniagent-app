@@ -1,87 +1,62 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
+import { useRouter } from 'next/navigation';
+import DAODashboard from '@/app/components/DAODashboard';
+import UserProfile from '@/app/components/UserProfile';
 import { Card, CardContent } from '@/components/ui/card';
-import { useState } from 'react';
 
-export default function Dashboard() {
-  const [loading, setLoading] = useState(false);
-  const [proposals, setProposals] = useState([
-    {
-      id: '1',
-      description: 'Stake 50 ETH in Lido',
-      target: '0xabc123...',
-      status: 'pending',
-    },
-    {
-      id: '2',
-      description: 'Swap 1000 USDC to DAI',
-      target: '0xdef456...',
-      status: 'executed',
-    },
-  ]);
+export default function DashboardPage() {
+  const isLoggedIn = useIsLoggedIn();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      // Redirect to home page if not logged in
+      router.push('/');
+    } else {
+      setIsLoading(false);
+    }
+  }, [isLoggedIn, router]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <Card className="p-8">
+          <CardContent className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Checking authentication...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show dashboard only if logged in
+  if (!isLoggedIn) {
+    return null; // Will redirect to home
+  }
 
   return (
-    <div className="p-8 space-y-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold">📊 OmniAgent Dashboard</h1>
-
-      {/* Treasury Card */}
-      <Card>
-        <CardContent className="p-6">
-          <h2 className="text-xl font-semibold mb-2">Treasury</h2>
-          <div className="flex space-x-4">
-            <div className="text-gray-700">ETH: 100</div>
-            <div className="text-gray-700">USDC: 25,000</div>
+    <div className="min-h-screen bg-background">
+      {/* Header with User Profile */}
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold">OmniAgent DAO</h1>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Proposals Section */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Proposals</h2>
-          <Button
-            disabled={loading}
-            onClick={async () => {
-              setLoading(true);
-              try {
-                const res = await fetch('/api/agent', { method: 'POST' });
-                const data = await res.json();
-                setProposals((prev) => [...prev, ...data]);
-              } catch (err) {
-                console.error('Failed to fetch proposals:', err);
-              } finally {
-                setLoading(false);
-              }
-            }}
-          >
-            {loading ? 'Generating...' : 'Generate Proposal'}
-          </Button>
+          <UserProfile />
         </div>
+      </header>
 
-        <div className="space-y-4">
-          {proposals.map((p) => (
-            <Card key={p.id}>
-              <CardContent className="p-4">
-                <div className="text-lg font-medium">{p.description}</div>
-                <div className="text-sm text-gray-500">Target: {p.target}</div>
-                <div className="text-sm mt-2">
-                  Status:{' '}
-                  <span
-                    className={`font-semibold ${
-                      p.status === 'executed'
-                        ? 'text-green-600'
-                        : p.status === 'pending'
-                          ? 'text-yellow-600'
-                          : 'text-red-600'
-                    }`}
-                  >
-                    {p.status}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      {/* Main Dashboard Content */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+          <DAODashboard />
         </div>
       </div>
     </div>
