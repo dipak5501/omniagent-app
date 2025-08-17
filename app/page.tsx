@@ -1,25 +1,30 @@
 'use client';
 
+import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { DynamicWidget } from '@/lib/dynamic';
-import { useDarkMode } from '@/lib/useDarkMode';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useIsLoggedIn, useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { useRouter } from 'next/navigation';
-import WalletAvatar from '@/app/components/WalletAvatar';
+import { DynamicWidget } from '@/lib/dynamic';
+import { useDarkMode } from '@/lib/useDarkMode';
 
 export default function Main() {
   const { isDarkMode } = useDarkMode();
   const [isMounted, setIsMounted] = useState(false);
   const isLoggedIn = useIsLoggedIn();
-  const { user, primaryWallet } = useDynamicContext();
   const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (isLoggedIn && isMounted) {
+      router.push('/dashboard');
+    }
+  }, [isLoggedIn, isMounted, router]);
 
   if (!isMounted) {
     return (
@@ -72,68 +77,18 @@ export default function Main() {
       </div>
 
       <div className="flex flex-col items-center justify-center gap-6 w-full max-w-4xl px-4">
-        {!isLoggedIn ? (
-          <>
-            <Card className="w-full">
-              <CardContent className="p-6">
-                <DynamicWidget />
-              </CardContent>
-            </Card>
+        <Card className="w-full">
+          <CardContent className="p-6">
+            <DynamicWidget />
+          </CardContent>
+        </Card>
 
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">Welcome to OmniAgent</h2>
-              <p className="text-muted-foreground mb-6">
-                Connect your wallet to access the DAO Dashboard
-              </p>
-            </div>
-          </>
-        ) : (
-          <div className="w-full max-w-2xl">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Welcome to OmniAgent!</h2>
-              <p className="text-muted-foreground mb-6">
-                Your wallet is connected. Here are your details:
-              </p>
-            </div>
-
-            <Card className="w-full mb-8">
-              <CardContent className="p-6">
-                <div className="text-center space-y-4">
-                  <div className="flex items-center justify-center gap-3">
-                    <WalletAvatar size={48} />
-                    <div className="text-left">
-                      <h3 className="text-xl font-semibold">
-                        {user?.firstName ||
-                          user?.username ||
-                          `User_${primaryWallet?.address?.slice(-4) || 'User'}`}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {primaryWallet?.address
-                          ? `${primaryWallet.address.slice(0, 6)}...${primaryWallet.address.slice(-4)}`
-                          : 'Connecting...'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-                    <span>Status: Connected</span>
-                    <span>•</span>
-                    <span>Network: Ethereum</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="text-center">
-              <Button
-                onClick={() => router.push('/dashboard')}
-                className="px-8 py-3 text-lg"
-              >
-                Go to DAO Dashboard
-              </Button>
-            </div>
-          </div>
-        )}
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Welcome to OmniAgent</h2>
+          <p className="text-muted-foreground mb-6">
+            Connect your wallet to access the DAO Dashboard
+          </p>
+        </div>
       </div>
 
       <div className="absolute bottom-0 right-5">

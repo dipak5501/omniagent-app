@@ -1,16 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import DAODashboard from '@/app/components/DAODashboard';
-import UserProfile from '@/app/components/UserProfile';
+import OmniAgentDashboard from '@/app/components/OmniAgentDashboard';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+
+type DashboardTab = 'omniagent' | 'dao';
 
 export default function DashboardPage() {
   const isLoggedIn = useIsLoggedIn();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<DashboardTab>('omniagent');
 
   useEffect(() => {
     // Check if user is logged in
@@ -41,24 +45,37 @@ export default function DashboardPage() {
     return null; // Will redirect to home
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header with User Profile */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold">OmniAgent DAO</h1>
-          </div>
-          <UserProfile />
-        </div>
-      </header>
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'omniagent':
+        return <OmniAgentDashboard />;
+      case 'dao':
+        return <DAODashboard />;
+      default:
+        return <OmniAgentDashboard />;
+    }
+  };
 
-      {/* Main Dashboard Content */}
-      <div className="flex justify-center">
-        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-          <DAODashboard />
-        </div>
+  return (
+    <div className="min-h-screen bg-background p-6">
+      {/* Tab Navigation */}
+      <div className="flex gap-2 mb-6">
+        <Button
+          variant={activeTab === 'omniagent' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('omniagent')}
+        >
+          OmniAgent
+        </Button>
+        <Button
+          variant={activeTab === 'dao' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('dao')}
+        >
+          DAO Dashboard
+        </Button>
       </div>
+
+      {/* Tab Content */}
+      {renderTabContent()}
     </div>
   );
 }

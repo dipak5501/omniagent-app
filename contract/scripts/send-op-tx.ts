@@ -1,4 +1,5 @@
 import { network } from "hardhat";
+import { logToHedera } from '../../lib/utils.js';
 
 const { viem } = await network.connect({
   network: "hardhatOp",
@@ -29,3 +30,12 @@ const tx = await senderClient.sendTransaction({
 await publicClient.waitForTransactionReceipt({ hash: tx });
 
 console.log("Transaction sent successfully");
+
+// Log transaction to Hedera
+const topicId = process.env.HEDERA_TOPIC_ID;
+if (topicId) {
+  await logToHedera(`Transaction sent: hash=${tx}, from=${senderClient.account.address}`, topicId);
+  console.log('Logged transaction to Hedera.');
+} else {
+  console.warn('HEDERA_TOPIC_ID not set. Skipping Hedera logging.');
+}
