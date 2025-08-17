@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import type {
   DAOTreasury,
   GovernanceProposal,
@@ -56,7 +55,7 @@ export default function OmniAgentDashboard() {
   const updateAsset = (
     index: number,
     field: keyof TreasuryAsset,
-    value: any
+    value: string | number
   ) => {
     setTreasury((prev) => {
       return {
@@ -147,8 +146,12 @@ export default function OmniAgentDashboard() {
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.8) return 'bg-green-100 text-green-800';
-    if (confidence >= 0.6) return 'bg-yellow-100 text-yellow-800';
+    if (confidence >= 0.8) {
+      return 'bg-green-100 text-green-800';
+    }
+    if (confidence >= 0.6) {
+      return 'bg-yellow-100 text-yellow-800';
+    }
     return 'bg-red-100 text-red-800';
   };
 
@@ -239,16 +242,34 @@ export default function OmniAgentDashboard() {
             <div>
               <Label>Goals</Label>
               <Input
-                value={treasury.goals?.join(', ') || ''}
-                onChange={(e) =>
+                defaultValue={treasury.goals?.join(', ') || ''}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  console.log('Goals input value:', inputValue); // Debug log
+                  // Only update when user finishes typing (on blur or enter)
+                }}
+                onBlur={(e) => {
+                  const inputValue = e.target.value;
                   setTreasury((prev) => ({
                     ...prev,
-                    goals: e.target.value
+                    goals: inputValue
                       .split(',')
                       .map((g) => g.trim())
-                      .filter((g) => g),
-                  }))
-                }
+                      .filter((g) => g.length > 0),
+                  }));
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const inputValue = e.currentTarget.value;
+                    setTreasury((prev) => ({
+                      ...prev,
+                      goals: inputValue
+                        .split(',')
+                        .map((g) => g.trim())
+                        .filter((g) => g.length > 0),
+                    }));
+                  }
+                }}
                 placeholder="Earn yield, reduce risk..."
               />
             </div>
@@ -262,9 +283,19 @@ export default function OmniAgentDashboard() {
           {/* Assets List */}
           <div className="space-y-2">
             <Label>Assets</Label>
+
+            {/* Column Headers */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-sm font-medium text-muted-foreground">
+              <div>Token</div>
+              <div>Amount</div>
+              <div>Chain</div>
+              <div>Value (USD)</div>
+              <div>Action</div>
+            </div>
+
             {treasury.assets.map((asset, index) => (
               <div
-                key={`asset-${index}-${asset.token}`}
+                key={`asset-${index}-${asset.amount}-${asset.chain}`}
                 className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end"
               >
                 <Input

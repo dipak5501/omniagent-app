@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { type DAOTreasury, OmniAgent } from '@/lib/ai-agent';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const { treasury, count = 1 }: { treasury: DAOTreasury; count?: number } =

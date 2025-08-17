@@ -1,20 +1,10 @@
 'use client';
 
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { encodeFunctionData, parseEther } from 'viem';
-import {
-  useAccount,
-  useReadContract,
-  useSimulateContract,
-  useWriteContract,
-} from 'wagmi';
+import { useAccount, useWriteContract } from 'wagmi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import DAOActionExecutorABI from '@/lib/abi/DAOActionExecutor.json';
 import { useProposals } from '@/lib/providers';
@@ -39,65 +29,16 @@ const DAO_ACTION_EXECUTOR_ADDRESS =
   '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
 export default function DAODashboard() {
-  const { handleLogOut } = useDynamicContext();
-  const router = useRouter();
   const { address } = useAccount();
   const { approvedProposals, updateProposal } = useProposals();
 
-  // Combine approved proposals with some sample proposals for demo
-  const [sampleProposals, setSampleProposals] = useState<Proposal[]>([
-    {
-      id: '1',
-      title: 'Add New Token to Treasury',
-      description:
-        'Proposal to add USDC token to the DAO treasury for better liquidity management.',
-      status: 'passed',
-      votesFor: 1250,
-      votesAgainst: 320,
-      endDate: '2024-01-15',
-      creator: '0x1234...5678',
-      target: '0x1234567890123456789012345678901234567890',
-      calldata: '0x',
-      value: '0',
-    },
-    {
-      id: '2',
-      title: 'Update Governance Parameters',
-      description:
-        'Adjust voting period and quorum requirements for better governance efficiency.',
-      status: 'pending',
-      votesFor: 0,
-      votesAgainst: 0,
-      endDate: '2024-01-20',
-      creator: '0x8765...4321',
-    },
-    {
-      id: '3',
-      title: 'Fund Development Team',
-      description:
-        'Allocate 100 ETH to development team for Q1 2024 initiatives.',
-      status: 'passed',
-      votesFor: 2100,
-      votesAgainst: 150,
-      endDate: '2024-01-10',
-      creator: '0xabcd...efgh',
-      target: '0xabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd',
-      calldata: '0x',
-      value: parseEther('100').toString(),
-    },
-  ]);
-
-  // Combine approved proposals with sample proposals
-  const allProposals = [...approvedProposals, ...sampleProposals];
-
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newProposal, setNewProposal] = useState({
-    title: '',
-    description: '',
-    endDate: '',
-  });
   const [simulationResults, setSimulationResults] = useState<{
-    [key: string]: any;
+    [key: string]: {
+      loading?: boolean;
+      error?: string;
+      success?: boolean;
+      result?: unknown;
+    };
   }>({});
   const [executionStatus, setExecutionStatus] = useState<{
     [key: string]: 'idle' | 'loading' | 'success' | 'error';
@@ -120,59 +61,6 @@ export default function DAODashboard() {
         return 'secondary';
       default:
         return 'default';
-    }
-  };
-
-  const handleCreateProposal = () => {
-    if (newProposal.title && newProposal.description && newProposal.endDate) {
-      const proposal: Proposal = {
-        id: Date.now().toString(),
-        title: newProposal.title,
-        description: newProposal.description,
-        status: 'pending',
-        votesFor: 0,
-        votesAgainst: 0,
-        endDate: newProposal.endDate,
-        creator: '0xYour...Wallet',
-      };
-      setSampleProposals([proposal, ...sampleProposals]);
-      setNewProposal({ title: '', description: '', endDate: '' });
-      setShowCreateForm(false);
-    }
-  };
-
-  const handleVote = (proposalId: string, vote: 'for' | 'against') => {
-    // Check if it's an approved proposal
-    const approvedProposal = approvedProposals.find((p) => p.id === proposalId);
-    if (approvedProposal) {
-      updateProposal(proposalId, {
-        votesFor:
-          vote === 'for'
-            ? approvedProposal.votesFor + 1
-            : approvedProposal.votesFor,
-        votesAgainst:
-          vote === 'against'
-            ? approvedProposal.votesAgainst + 1
-            : approvedProposal.votesAgainst,
-      });
-    } else {
-      // Update sample proposals
-      setSampleProposals(
-        sampleProposals.map((proposal) => {
-          if (proposal.id === proposalId) {
-            return {
-              ...proposal,
-              votesFor:
-                vote === 'for' ? proposal.votesFor + 1 : proposal.votesFor,
-              votesAgainst:
-                vote === 'against'
-                  ? proposal.votesAgainst + 1
-                  : proposal.votesAgainst,
-            };
-          }
-          return proposal;
-        })
-      );
     }
   };
 
@@ -223,11 +111,13 @@ export default function DAODashboard() {
           }));
         }
       }, 1500);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Simulation failed';
       setSimulationResults((prev) => ({
         ...prev,
         [proposal.id]: {
-          error: error.message || 'Simulation failed',
+          error: errorMessage,
           details: error,
         },
       }));
@@ -286,25 +176,21 @@ export default function DAODashboard() {
       );
       if (approvedProposal) {
         updateProposal(proposal.id, { status: 'executed' });
-      } else {
-        setSampleProposals((prev) =>
-          prev.map((p) =>
-            p.id === proposal.id ? { ...p, status: 'executed' as const } : p
-          )
-        );
       }
 
       setExecutionStatus((prev) => ({
         ...prev,
         [proposal.id]: 'success',
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       setExecutionStatus((prev) => ({
         ...prev,
         [proposal.id]: 'error',
       }));
       console.error('Execution failed:', error);
-      alert(`Execution failed: ${error.message || 'Unknown error'}`);
+      alert(`Execution failed: ${errorMessage}`);
     }
   };
 
@@ -335,22 +221,15 @@ export default function DAODashboard() {
           alert('Crosschain execution failed. Please try again.');
         }
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       setExecutionStatus((prev) => ({
         ...prev,
         [proposal.id]: 'error',
       }));
       console.error('Crosschain execution failed:', error);
-      alert(`Crosschain execution failed: ${error.message || 'Unknown error'}`);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await handleLogOut();
-      router.push('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
+      alert(`Crosschain execution failed: ${errorMessage}`);
     }
   };
 
@@ -369,66 +248,7 @@ export default function DAODashboard() {
             </p>
           )}
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setShowCreateForm(!showCreateForm)}>
-            {showCreateForm ? 'Cancel' : 'Create Proposal'}
-          </Button>
-          <Button variant="outline" onClick={handleLogout}>
-            Sign Out
-          </Button>
-        </div>
       </div>
-
-      {/* Create Proposal Form */}
-      {showCreateForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Create New Proposal</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="title">Proposal Title</Label>
-              <Input
-                id="title"
-                value={newProposal.title}
-                onChange={(e) =>
-                  setNewProposal({ ...newProposal, title: e.target.value })
-                }
-                placeholder="Enter proposal title"
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <textarea
-                id="description"
-                value={newProposal.description}
-                onChange={(e) =>
-                  setNewProposal({
-                    ...newProposal,
-                    description: e.target.value,
-                  })
-                }
-                placeholder="Describe your proposal"
-                className="w-full min-h-[100px] p-3 border rounded-md resize-none"
-              />
-            </div>
-            <div>
-              <Label htmlFor="endDate">End Date</Label>
-              <Input
-                id="endDate"
-                type="date"
-                value={newProposal.endDate}
-                onChange={(e) =>
-                  setNewProposal({ ...newProposal, endDate: e.target.value })
-                }
-              />
-            </div>
-            <Button onClick={handleCreateProposal} className="w-full">
-              Submit Proposal
-            </Button>
-          </CardContent>
-        </Card>
-      )}
 
       <Separator />
 
@@ -489,11 +309,6 @@ export default function DAODashboard() {
                   )}
 
                   <div className="flex justify-between items-center">
-                    <div className="flex gap-4 text-sm">
-                      <span>👍 {proposal.votesFor} votes</span>
-                      <span>👎 {proposal.votesAgainst} votes</span>
-                    </div>
-
                     {/* Show action buttons for pending or passed proposals with a target */}
                     {(proposal.status === 'pending' ||
                       proposal.status === 'passed') &&
@@ -570,9 +385,11 @@ export default function DAODashboard() {
                           {simulationResults[proposal.id].result && (
                             <p className="text-xs mt-1">
                               Gas:{' '}
-                              {simulationResults[
-                                proposal.id
-                              ].result.request?.gas?.toString() || 'N/A'}
+                              {(
+                                simulationResults[proposal.id].result as {
+                                  request?: { gas?: number };
+                                }
+                              )?.request?.gas?.toString() || 'N/A'}
                             </p>
                           )}
                         </div>
@@ -600,144 +417,6 @@ export default function DAODashboard() {
             ))}
           </div>
         )}
-
-        {/* Sample Proposals Section */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-600 mb-3">
-            Sample Proposals ({sampleProposals.length})
-          </h3>
-          {sampleProposals.map((proposal) => (
-            <Card key={proposal.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="flex items-center gap-2">
-                      {proposal.title}
-                      <Badge variant={getStatusColor(proposal.status)}>
-                        {proposal.status.toUpperCase()}
-                      </Badge>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Created by {proposal.creator} • Ends {proposal.endDate}
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  {proposal.description}
-                </p>
-
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-4 text-sm">
-                    <span>👍 {proposal.votesFor} votes</span>
-                    <span>👎 {proposal.votesAgainst} votes</span>
-                  </div>
-
-                  {proposal.status === 'active' && (
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleVote(proposal.id, 'for')}
-                      >
-                        Vote For
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleVote(proposal.id, 'against')}
-                      >
-                        Vote Against
-                      </Button>
-                    </div>
-                  )}
-
-                  {proposal.status === 'passed' && proposal.target && (
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleSimulate(proposal)}
-                        disabled={simulationResults[proposal.id]?.loading}
-                      >
-                        {simulationResults[proposal.id]?.loading
-                          ? 'Simulating...'
-                          : 'Simulate'}
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => handleExecute(proposal)}
-                        disabled={
-                          executionStatus[proposal.id] === 'loading' ||
-                          isExecuting
-                        }
-                      >
-                        {executionStatus[proposal.id] === 'loading' ||
-                        isExecuting
-                          ? 'Executing...'
-                          : 'Execute'}
-                      </Button>
-                    </div>
-                  )}
-
-                  {proposal.status === 'executed' && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-green-600 font-semibold">
-                        ✅ Executed
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Simulation Results */}
-                {simulationResults[proposal.id] && (
-                  <div className="mt-4 p-3 bg-muted rounded-md">
-                    <h4 className="font-semibold mb-2">Simulation Results:</h4>
-                    {simulationResults[proposal.id].loading && (
-                      <p className="text-sm">Simulating transaction...</p>
-                    )}
-                    {simulationResults[proposal.id].error && (
-                      <div className="text-sm text-red-600">
-                        <p className="font-semibold">Error:</p>
-                        <p>{simulationResults[proposal.id].error}</p>
-                      </div>
-                    )}
-                    {simulationResults[proposal.id].success && (
-                      <div className="text-sm text-green-600">
-                        <p className="font-semibold">Success:</p>
-                        <p>Transaction would succeed</p>
-                        {simulationResults[proposal.id].result && (
-                          <p className="text-xs mt-1">
-                            Gas:{' '}
-                            {simulationResults[
-                              proposal.id
-                            ].result.request?.gas?.toString() || 'N/A'}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Execution Status */}
-                {executionStatus[proposal.id] && (
-                  <div className="mt-2">
-                    {executionStatus[proposal.id] === 'success' && (
-                      <p className="text-sm text-green-600 font-semibold">
-                        ✅ Proposal executed successfully!
-                      </p>
-                    )}
-                    {executionStatus[proposal.id] === 'error' && (
-                      <p className="text-sm text-red-600 font-semibold">
-                        ❌ Execution failed. Please try again.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
     </div>
   );

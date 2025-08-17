@@ -1,12 +1,25 @@
 'use client';
 
 import { useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import DAODashboard from '@/app/components/DAODashboard';
-import OmniAgentDashboard from '@/app/components/OmniAgentDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+
+// Dynamic imports to prevent SSR issues
+const DAODashboard = dynamic(() => import('@/app/components/DAODashboard'), {
+  ssr: false,
+});
+const OmniAgentDashboard = dynamic(
+  () => import('@/app/components/OmniAgentDashboard'),
+  {
+    ssr: false,
+  }
+);
+const UserProfile = dynamic(() => import('@/app/components/UserProfile'), {
+  ssr: false,
+});
 
 type DashboardTab = 'omniagent' | 'dao';
 
@@ -57,25 +70,45 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      {/* Tab Navigation */}
-      <div className="flex gap-2 mb-6">
-        <Button
-          variant={activeTab === 'omniagent' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('omniagent')}
-        >
-          OmniAgent
-        </Button>
-        <Button
-          variant={activeTab === 'dao' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('dao')}
-        >
-          DAO Dashboard
-        </Button>
-      </div>
+    <div className="min-h-screen bg-background">
+      {/* Header with User Profile */}
+      <Card className="border-b rounded-none border-x-0 border-t-0 shadow-none">
+        <CardContent className="p-4 sm:p-6">
+          <div
+            className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8"
+            style={{ gap: 'clamp(1rem, 45vw, 700px)' }}
+          >
+            <div className="text-center sm:text-left">
+              <h1 className="text-xl sm:text-2xl font-bold">OmniAgent DAO</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Manage your DAO and AI agent
+              </p>
+            </div>
+            <UserProfile />
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Tab Content */}
-      {renderTabContent()}
+      <div className="p-6">
+        {/* Tab Navigation */}
+        <div className="flex gap-2 mb-6 justify-center">
+          <Button
+            variant={activeTab === 'omniagent' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('omniagent')}
+          >
+            OmniAgent
+          </Button>
+          <Button
+            variant={activeTab === 'dao' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('dao')}
+          >
+            DAO Dashboard
+          </Button>
+        </div>
+
+        {/* Tab Content */}
+        {renderTabContent()}
+      </div>
     </div>
   );
 }

@@ -26,7 +26,7 @@ export interface GovernanceProposal {
   targetContract: string;
   functionName: string;
   payable: boolean;
-  arguments: any[];
+  arguments: string[]; // Changed from any[] to string[]
   valueInETH?: number;
   support: boolean;
   confidence: number;
@@ -158,7 +158,7 @@ Focus on practical, executable actions with real contract addresses and function
       try {
         const proposal = JSON.parse(response);
         return proposal as GovernanceProposal;
-      } catch (parseError) {
+      } catch (_parseError) {
         console.error('Failed to parse proposal JSON:', response);
         throw new Error('Invalid proposal format');
       }
