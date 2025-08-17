@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import DAOActionExecutorABI from '@/lib/abi/DAOActionExecutor.json';
 import { useProposals } from '@/lib/providers';
 import { logToHedera } from '../../lib/utils';
@@ -47,7 +45,7 @@ export default function DAODashboard() {
   // Contract write function
   const { writeContract, isPending: isExecuting } = useWriteContract();
 
-  const getStatusColor = (status: string) => {
+  const _getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
         return 'default';
@@ -236,89 +234,103 @@ export default function DAODashboard() {
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">DAO Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
+            DAO Dashboard
+          </h1>
+          <p className="text-white/80 text-base md:text-lg">
             Manage proposals and governance
           </p>
           {address && (
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-white/60 text-sm mt-2">
               Connected: {address.slice(0, 6)}...{address.slice(-4)}
             </p>
           )}
         </div>
       </div>
 
-      <Separator />
-
       {/* Proposals List */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">Active Proposals</h2>
+      <div className="space-y-6">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+          Active Proposals
+        </h2>
 
         {/* Approved Proposals Section */}
         {approvedProposals.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-green-600 mb-3">
+          <div className="mb-8">
+            <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-green-400 mb-4">
               ✅ Approved AI Proposals ({approvedProposals.length})
             </h3>
             {approvedProposals.map((proposal) => (
-              <Card
+              <div
                 key={proposal.id}
-                className="border-green-200 bg-green-50/50"
+                className="border border-purple-500/30 bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-md rounded-2xl p-6 mb-6 shadow-xl shadow-purple-500/10"
               >
-                <CardHeader>
+                <div className="mb-6">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <CardTitle className="flex items-center gap-2">
+                      <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-3 flex items-center gap-3">
                         {proposal.title}
-                        <Badge variant={getStatusColor(proposal.status)}>
+                        <Badge
+                          className={`${
+                            proposal.status === 'active'
+                              ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                              : proposal.status === 'passed'
+                                ? 'bg-green-500/20 text-green-300 border-green-500/30'
+                                : proposal.status === 'failed'
+                                  ? 'bg-red-500/20 text-red-300 border-red-500/30'
+                                  : proposal.status === 'pending'
+                                    ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'
+                                    : 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                          } border rounded-full px-3 py-1 text-xs font-medium`}
+                        >
                           {proposal.status.toUpperCase()}
                         </Badge>
-                        <Badge
-                          variant="outline"
-                          className="bg-green-100 text-green-800"
-                        >
+                        <Badge className="bg-green-500/20 text-green-300 border-green-500/30 border rounded-full px-3 py-1 text-xs font-medium">
                           AI APPROVED
                         </Badge>
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      </h3>
+                      <p className="text-white/70 text-sm md:text-base">
                         Created by {proposal.creator} • Ends {proposal.endDate}
                       </p>
                       {proposal.confidence && (
-                        <p className="text-xs text-green-600 mt-1">
+                        <p className="text-green-400 text-sm mt-2">
                           AI Confidence: {Math.round(proposal.confidence * 100)}
                           %
                         </p>
                       )}
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">
+                </div>
+                <div className="space-y-6">
+                  <p className="text-white/90 text-sm md:text-base leading-relaxed">
                     {proposal.description}
                   </p>
 
                   {proposal.reason && (
-                    <div className="mb-4 p-3 bg-blue-50 rounded-md">
-                      <strong className="text-sm">AI Rationale:</strong>
-                      <p className="text-sm text-muted-foreground mt-1">
+                    <div className="mb-6 p-4 border border-blue-500/20 rounded-xl bg-blue-500/10">
+                      <strong className="text-blue-300 text-sm md:text-base">
+                        AI Rationale:
+                      </strong>
+                      <p className="text-blue-200 text-sm md:text-base mt-2 leading-relaxed">
                         {proposal.reason}
                       </p>
                     </div>
                   )}
 
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     {/* Show action buttons for pending or passed proposals with a target */}
                     {(proposal.status === 'pending' ||
                       proposal.status === 'passed') &&
                       proposal.target && (
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => handleSimulate(proposal)}
                             disabled={simulationResults[proposal.id]?.loading}
+                            className="bg-purple-900/30 border-purple-500/30 hover:bg-purple-800/40 text-white rounded-xl px-4 py-2"
                           >
                             {simulationResults[proposal.id]?.loading
                               ? 'Simulating...'
@@ -331,6 +343,7 @@ export default function DAODashboard() {
                               executionStatus[proposal.id] === 'loading' ||
                               isExecuting
                             }
+                            className="bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white border-0 hover:from-indigo-600 hover:to-fuchsia-600 rounded-xl px-4 py-2"
                           >
                             {executionStatus[proposal.id] === 'loading' ||
                             isExecuting
@@ -345,6 +358,7 @@ export default function DAODashboard() {
                               executionStatus[proposal.id] === 'loading' ||
                               isExecuting
                             }
+                            className="bg-purple-900/30 border-purple-500/30 hover:bg-purple-800/40 text-white rounded-xl px-4 py-2"
                           >
                             {executionStatus[proposal.id] === 'loading' ||
                             isExecuting
@@ -356,7 +370,7 @@ export default function DAODashboard() {
 
                     {proposal.status === 'executed' && (
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-green-600 font-semibold">
+                        <span className="text-green-400 font-semibold text-sm md:text-base">
                           ✅ Executed
                         </span>
                       </div>
@@ -365,25 +379,27 @@ export default function DAODashboard() {
 
                   {/* Simulation Results */}
                   {simulationResults[proposal.id] && (
-                    <div className="mt-4 p-3 bg-muted rounded-md">
-                      <h4 className="font-semibold mb-2">
+                    <div className="mt-6 p-4 border border-purple-500/30 rounded-xl bg-gradient-to-r from-purple-900/30 to-indigo-900/30">
+                      <h4 className="font-semibold mb-3 text-white text-lg">
                         Simulation Results:
                       </h4>
                       {simulationResults[proposal.id].loading && (
-                        <p className="text-sm">Simulating transaction...</p>
+                        <p className="text-white/80 text-sm md:text-base">
+                          Simulating transaction...
+                        </p>
                       )}
                       {simulationResults[proposal.id].error && (
-                        <div className="text-sm text-red-600">
+                        <div className="text-red-300 text-sm md:text-base">
                           <p className="font-semibold">Error:</p>
                           <p>{simulationResults[proposal.id].error}</p>
                         </div>
                       )}
                       {simulationResults[proposal.id].success && (
-                        <div className="text-sm text-green-600">
+                        <div className="text-green-300 text-sm md:text-base">
                           <p className="font-semibold">Success:</p>
                           <p>Transaction would succeed</p>
                           {simulationResults[proposal.id].result && (
-                            <p className="text-xs mt-1">
+                            <p className="text-xs mt-2 text-white/70">
                               Gas:{' '}
                               {(
                                 simulationResults[proposal.id].result as {
@@ -399,21 +415,21 @@ export default function DAODashboard() {
 
                   {/* Execution Status */}
                   {executionStatus[proposal.id] && (
-                    <div className="mt-2">
+                    <div className="mt-4">
                       {executionStatus[proposal.id] === 'success' && (
-                        <p className="text-sm text-green-600 font-semibold">
+                        <p className="text-green-400 font-semibold text-sm md:text-base">
                           ✅ Proposal executed successfully!
                         </p>
                       )}
                       {executionStatus[proposal.id] === 'error' && (
-                        <p className="text-sm text-red-600 font-semibold">
+                        <p className="text-red-400 font-semibold text-sm md:text-base">
                           ❌ Execution failed. Please try again.
                         </p>
                       )}
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         )}

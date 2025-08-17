@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { GlobalParticleBackground } from '@/app/components/GlobalParticleBackground';
 import Providers from '@/lib/providers';
 
 const inter = Inter({
@@ -25,6 +26,7 @@ export default function RootLayout({
         className={`${inter.className} font-sans antialiased`}
         suppressHydrationWarning={true}
       >
+        <GlobalParticleBackground />
         <Providers>{children}</Providers>
       </body>
     </html>

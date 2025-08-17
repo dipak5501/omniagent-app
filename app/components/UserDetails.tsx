@@ -18,7 +18,6 @@ import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import WalletAvatar from './WalletAvatar';
 
 export default function UserDetails() {
@@ -67,59 +66,69 @@ export default function UserDetails() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="w-full border border-purple-500/30 bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-md rounded-2xl p-6 shadow-xl shadow-purple-500/10">
+      <div className="mb-6">
+        <h2 className="flex items-center gap-2 text-xl md:text-2xl lg:text-3xl font-bold text-white">
           <User className="h-5 w-5" />
           User Profile
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        </h2>
+      </div>
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <WalletAvatar size={64} />
           <div className="flex-1">
-            <h3 className="text-lg font-semibold">{fullName}</h3>
-            <p className="text-sm text-muted-foreground">{userEmail}</p>
+            <h3 className="text-lg md:text-xl lg:text-2xl font-semibold text-white">
+              {fullName}
+            </h3>
+            <p className="text-sm md:text-base text-white/80">{userEmail}</p>
             <div className="flex items-center gap-2 mt-2">
-              <Badge variant="secondary">Active</Badge>
-              <span className="text-xs text-muted-foreground">
+              <Badge className="bg-green-500/20 text-green-300 border-green-500/30 border rounded-full px-3 py-1 text-xs font-medium">
+                Active
+              </Badge>
+              <span className="text-xs text-white/70">
                 Member since {joinDate}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/10">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-white/70">
               <Mail className="h-4 w-4" />
               <span>Email</span>
             </div>
-            <p className="text-sm font-medium">{userEmail}</p>
+            <p className="text-sm md:text-base font-medium text-white">
+              {userEmail}
+            </p>
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-white/70">
               <Calendar className="h-4 w-4" />
               <span>Joined</span>
             </div>
-            <p className="text-sm font-medium">{joinDate}</p>
+            <p className="text-sm md:text-base font-medium text-white">
+              {joinDate}
+            </p>
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-white/70">
               <User className="h-4 w-4" />
               <span>Username</span>
             </div>
-            <p className="text-sm font-medium">{userName}</p>
+            <p className="text-sm md:text-base font-medium text-white">
+              {userName}
+            </p>
           </div>
         </div>
 
         {walletAddress && (
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t border-white/10">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-white/70">
                   <Wallet className="h-4 w-4" />
                   <span>Full Wallet Address</span>
                 </div>
@@ -128,7 +137,7 @@ export default function UserDetails() {
                     variant="ghost"
                     size="sm"
                     onClick={copyToClipboard}
-                    className="h-8 px-2"
+                    className="h-8 px-2 bg-purple-900/30 border border-purple-500/30 hover:bg-purple-800/40 text-white rounded-lg"
                   >
                     {copied ? (
                       <>
@@ -146,7 +155,7 @@ export default function UserDetails() {
                     variant="ghost"
                     size="sm"
                     onClick={toggleAddressVisibility}
-                    className="h-8 px-2"
+                    className="h-8 px-2 bg-purple-900/30 border border-purple-500/30 hover:bg-purple-800/40 text-white rounded-lg"
                   >
                     {showFullAddress ? (
                       <>
@@ -162,7 +171,7 @@ export default function UserDetails() {
                   </Button>
                 </div>
               </div>
-              <p className="text-xs font-mono bg-muted px-3 py-2 rounded break-all">
+              <p className="text-xs font-mono bg-purple-900/30 border border-purple-500/30 px-3 py-2 rounded-lg break-all text-white">
                 {showFullAddress
                   ? walletAddress
                   : '••••••••••••••••••••••••••••••••••••••••'}
@@ -170,7 +179,7 @@ export default function UserDetails() {
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
