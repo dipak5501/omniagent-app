@@ -1,5 +1,6 @@
 'use client';
 
+import { motion as Motion } from 'framer-motion';
 import {
   Activity,
   BarChart3,
@@ -7,7 +8,6 @@ import {
   Settings,
   Users,
 } from 'lucide-react';
-import { motion as Motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 

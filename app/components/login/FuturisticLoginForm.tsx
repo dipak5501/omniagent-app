@@ -1,14 +1,12 @@
-import { Scan, Wallet, Zap } from 'lucide-react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { DynamicWidget } from '@/lib/dynamic';
 import { AIAssistant } from './AIAssistant';
 
 export function FuturisticLoginForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [_isScanning, setIsScanning] = useState(false);
-  const [step, setStep] = useState(1);
+  const [isLoading, _setIsLoading] = useState(false);
+  const [_isScanning, _setIsScanning] = useState(false);
+  const [step, _setStep] = useState(1);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -29,23 +27,24 @@ export function FuturisticLoginForm() {
     mouseY.set(0);
   };
 
-  const handleWalletConnect = async () => {
-    setIsLoading(true);
-    setIsScanning(true);
-    setStep(1);
+  // Commented out since we're using DynamicWidget instead
+  // const handleWalletConnect = async () => {
+  //   setIsLoading(true);
+  //   setIsScanning(true);
+  //   setStep(1);
 
-    setTimeout(() => {
-      setStep(2);
-      setTimeout(() => {
-        setStep(3);
-        setTimeout(() => {
-          setIsLoading(false);
-          setIsScanning(false);
-          console.log('Wallet connection initiated');
-        }, 1000);
-      }, 1500);
-    }, 2000);
-  };
+  //   setTimeout(() => {
+  //     setStep(2);
+  //     setTimeout(() => {
+  //       setStep(3);
+  //       setTimeout(() => {
+  //         setIsLoading(false);
+  //         setIsScanning(false);
+  //         console.log('Wallet connection initiated');
+  //       }, 1000);
+  //     }, 1500);
+  //   }, 2000);
+  // };
 
   return (
     <motion.div
@@ -98,6 +97,18 @@ export function FuturisticLoginForm() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
+          className="flex justify-center items-center w-full px-4"
+        >
+          <div className="flex justify-center items-center w-full">
+            <DynamicWidget />
+          </div>
+        </motion.div>
+
+        {/* Original connect wallet button - commented out
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
         >
           <Button
             onClick={handleWalletConnect}
@@ -124,6 +135,7 @@ export function FuturisticLoginForm() {
             </div>
           </Button>
         </motion.div>
+        */}
 
         {isLoading && (
           <motion.div
@@ -192,15 +204,6 @@ export function FuturisticLoginForm() {
               ? 'Authenticating wallet connection...'
               : 'Ready for secure DAO access'}
           </p>
-        </motion.div>
-
-        <motion.div
-          className="mt-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-        >
-          <DynamicWidget />
         </motion.div>
       </motion.div>
     </motion.div>

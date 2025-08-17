@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!**/contract/**", "!**/A Demo/**"]
+    "includes": ["**", "!**/contract", "!**/A Demo"]
   },
   "formatter": {
     "enabled": true,
@@ -49,6 +49,11 @@
   "json": {
     "formatter": {
       "enabled": true
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": false
     }
   }
 }

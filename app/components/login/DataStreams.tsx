@@ -1,5 +1,5 @@
-import { Globe, Shield, TrendingUp, Users, Vote, Zap } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Globe, Shield, TrendingUp, Users, Vote, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 interface DataPoint {

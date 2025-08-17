@@ -1,7 +1,7 @@
 'use client';
 
-import { Activity, CheckCircle, Lock, Shield, Wallet } from 'lucide-react';
 import { motion as Motion } from 'framer-motion';
+import { Activity, CheckCircle, Lock, Shield, Wallet } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 

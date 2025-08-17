@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AuthLoadingOverlay from '@/app/components/AuthLoadingOverlay';
 import { LiveActivityFeed } from '@/app/components/LiveActivityFeed';
-import { DataStreams } from '@/app/components/login/DataStreams';
 import { FuturisticLoginForm } from '@/app/components/login/FuturisticLoginForm';
 import TypingEffect from '@/app/components/TypingEffect';
 import UserProfile from '@/app/components/UserProfile';
@@ -78,7 +77,7 @@ export default function Main() {
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
 
-        <DataStreams />
+        {/* <DataStreams /> */}
 
         <div className="relative z-20 min-h-screen flex items-center justify-center p-8">
           <motion.div
@@ -188,11 +187,6 @@ export default function Main() {
             }}
           />
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="h-12 w-12 grid place-items-center rounded-xl bg-white/15 ring-1 ring-white/20">
-              <div className="h-8 w-8 bg-transparent rounded-full flex items-center justify-center text-white font-bold">
-                OA
-              </div>
-            </div>
             <div className="max-w-2xl">
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
                 Welcome to OmniAgent
@@ -219,12 +213,6 @@ export default function Main() {
                 className="bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white border-0 hover:from-indigo-600 hover:to-fuchsia-600"
               >
                 Go to DAO Dashboard
-              </Button>
-              <Button
-                variant="outline"
-                className="bg-white/10 border-white/10 hover:bg-white/20 text-white"
-              >
-                Explore Features
               </Button>
             </div>
           </div>

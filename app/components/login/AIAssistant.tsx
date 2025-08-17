@@ -1,5 +1,5 @@
-import { Bot, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Bot, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function AIAssistant() {

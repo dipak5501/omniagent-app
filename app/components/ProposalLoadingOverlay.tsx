@@ -1,7 +1,7 @@
 'use client';
 
-import { Activity, Bot, Cpu, Database, ShieldCheck } from 'lucide-react';
 import { motion as Motion } from 'framer-motion';
+import { Activity, Bot, Cpu, Database, ShieldCheck } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 

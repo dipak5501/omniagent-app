@@ -18,7 +18,7 @@ interface Connection {
 
 export function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameId = useRef<number>();
+  const animationFrameId = useRef<number | undefined>(undefined);
   const particles = useRef<Particle[]>([]);
   const mouse = useRef({ x: 0, y: 0 });
 

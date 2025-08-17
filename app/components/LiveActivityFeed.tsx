@@ -1,7 +1,7 @@
 'use client';
 
-import { CircleDot, Globe, Lock, Shield, Users, Vote } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { CircleDot, Globe, Lock, Shield, Users, Vote } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 interface ActivityItem {

@@ -1,7 +1,7 @@
 'use client';
 
-import { Heart, Home, Sparkles, Star, Zap } from 'lucide-react';
 import { motion as Motion } from 'framer-motion';
+import { Heart, Home, Sparkles, Star, Zap } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
