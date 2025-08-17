@@ -1,0 +1,45 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-2494ca7132809f3a07ebc81655140e0e311b29e3",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/MockAaveLendingPool.sol": "project/contracts/MockAaveLendingPool.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": [
+        "project/:@openzeppelin/contracts/=npm/@openzeppelin/contracts@5.4.0/"
+      ],
+      "viaIR": true
+    },
+    "sources": {
+      "npm/@openzeppelin/contracts@5.4.0/token/ERC20/IERC20.sol": {
+        "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)\n\npragma solidity >=0.4.16;\n\n/**\n * @dev Interface of the ERC-20 standard as defined in the ERC.\n */\ninterface IERC20 {\n    /**\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\n     * another (`to`).\n     *\n     * Note that `value` may be zero.\n     */\n    event Transfer(address indexed from, address indexed to, uint256 value);\n\n    /**\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\n     * a call to {approve}. `value` is the new allowance.\n     */\n    event Approval(address indexed owner, address indexed spender, uint256 value);\n\n    /**\n     * @dev Returns the value of tokens in existence.\n     */\n    function totalSupply() external view returns (uint256);\n\n    /**\n     * @dev Returns the value of tokens owned by `account`.\n     */\n    function balanceOf(address account) external view returns (uint256);\n\n    /**\n     * @dev Moves a `value` amount of tokens from the caller's account to `to`.\n     *\n     * Returns a boolean value indicating whether the operation succeeded.\n     *\n     * Emits a {Transfer} event.\n     */\n    function transfer(address to, uint256 value) external returns (bool);\n\n    /**\n     * @dev Returns the remaining number of tokens that `spender` will be\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\n     * zero by default.\n     *\n     * This value changes when {approve} or {transferFrom} are called.\n     */\n    function allowance(address owner, address spender) external view returns (uint256);\n\n    /**\n     * @dev Sets a `value` amount of tokens as the allowance of `spender` over the\n     * caller's tokens.\n     *\n     * Returns a boolean value indicating whether the operation succeeded.\n     *\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\n     * that someone may use both the old and the new allowance by unfortunate\n     * transaction ordering. One possible solution to mitigate this race\n     * condition is to first reduce the spender's allowance to 0 and set the\n     * desired value afterwards:\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\n     *\n     * Emits an {Approval} event.\n     */\n    function approve(address spender, uint256 value) external returns (bool);\n\n    /**\n     * @dev Moves a `value` amount of tokens from `from` to `to` using the\n     * allowance mechanism. `value` is then deducted from the caller's\n     * allowance.\n     *\n     * Returns a boolean value indicating whether the operation succeeded.\n     *\n     * Emits a {Transfer} event.\n     */\n    function transferFrom(address from, address to, uint256 value) external returns (bool);\n}\n"
+      },
+      "project/contracts/MockAaveLendingPool.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\nimport \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\n\n/// @title MockAaveLendingPool - Mock implementation of Aave LendingPool for Saga chain testing\ncontract MockAaveLendingPool {\n    mapping(address => uint256) public userDeposits;\n    mapping(address => uint256) public userBorrows;\n    mapping(address => uint256) public reserveLiquidity;\n    mapping(address => uint256) public reserveBorrowRate;\n    mapping(address => uint256) public reserveLiquidityRate;\n    \n    event Deposit(address indexed asset, address indexed user, uint256 amount, uint16 indexed referral);\n    event Withdraw(address indexed asset, address indexed user, address indexed to, uint256 amount);\n    event Borrow(address indexed asset, address indexed user, uint256 amount, uint256 interestRateMode, uint16 indexed referral);\n    event Repay(address indexed asset, address indexed user, address indexed repayer, uint256 amount);\n    \n    constructor() {}\n    \n    function deposit(\n        address asset,\n        uint256 amount,\n        address onBehalfOf,\n        uint16 referralCode\n    ) external {\n        require(amount > 0, \"Amount must be greater than 0\");\n        require(asset != address(0), \"Invalid asset address\");\n        \n        // Mock deposit logic\n        userDeposits[onBehalfOf] += amount;\n        reserveLiquidity[asset] += amount;\n        \n        emit Deposit(asset, msg.sender, amount, referralCode);\n    }\n    \n    function withdraw(\n        address asset,\n        uint256 amount,\n        address to\n    ) external returns (uint256) {\n        require(amount > 0, \"Amount must be greater than 0\");\n        require(userDeposits[msg.sender] >= amount, \"Insufficient deposits\");\n        \n        userDeposits[msg.sender] -= amount;\n        reserveLiquidity[asset] -= amount;\n        \n        emit Withdraw(asset, msg.sender, to, amount);\n        return amount;\n    }\n    \n    function borrow(\n        address asset,\n        uint256 amount,\n        uint256 interestRateMode,\n        uint16 referralCode,\n        address onBehalfOf\n    ) external {\n        require(amount > 0, \"Amount must be greater than 0\");\n        require(reserveLiquidity[asset] >= amount, \"Insufficient liquidity\");\n        \n        userBorrows[onBehalfOf] += amount;\n        reserveLiquidity[asset] -= amount;\n        \n        emit Borrow(asset, msg.sender, amount, interestRateMode, referralCode);\n    }\n    \n    function repay(\n        address asset,\n        uint256 amount,\n        uint256 /* interestRateMode */,\n        address onBehalfOf\n    ) external returns (uint256) {\n        require(amount > 0, \"Amount must be greater than 0\");\n        require(userBorrows[onBehalfOf] >= amount, \"Insufficient borrows\");\n        \n        userBorrows[onBehalfOf] -= amount;\n        reserveLiquidity[asset] += amount;\n        \n        emit Repay(asset, onBehalfOf, msg.sender, amount);\n        return amount;\n    }\n    \n    function getReserveData(address asset) external view returns (\n        uint256 configuration,\n        uint128 liquidityIndex,\n        uint128 variableBorrowIndex,\n        uint128 currentLiquidityRate,\n        uint128 currentVariableBorrowRate,\n        uint128 currentStableBorrowRate,\n        uint40 lastUpdateTimestamp,\n        uint16 id,\n        address aTokenAddress,\n        address stableDebtTokenAddress,\n        address variableDebtTokenAddress,\n        address interestRateStrategyAddress,\n        uint8 decimals\n    ) {\n        return (\n            0, // configuration\n            1e27, // liquidityIndex\n            1e27, // variableBorrowIndex\n            uint128(reserveLiquidityRate[asset]), // currentLiquidityRate\n            uint128(reserveBorrowRate[asset]), // currentVariableBorrowRate\n            0, // currentStableBorrowRate\n            uint40(block.timestamp), // lastUpdateTimestamp\n            0, // id\n            address(0), // aTokenAddress\n            address(0), // stableDebtTokenAddress\n            address(0), // variableDebtTokenAddress\n            address(0), // interestRateStrategyAddress\n            18 // decimals\n        );\n    }\n    \n    // Admin functions to set rates for testing\n    function setReserveBorrowRate(address asset, uint256 rate) external {\n        reserveBorrowRate[asset] = rate;\n    }\n    \n    function setReserveLiquidityRate(address asset, uint256 rate) external {\n        reserveLiquidityRate[asset] = rate;\n    }\n    \n    // Allow the contract to receive ETH\n    receive() external payable {}\n}\n"
+      }
+    }
+  }
+}

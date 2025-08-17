@@ -1,0 +1,487 @@
+{
+  "_format": "hh3-artifact-1",
+  "contractName": "MockAaveLendingPool",
+  "sourceName": "contracts/MockAaveLendingPool.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "interestRateMode",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "referral",
+          "type": "uint16"
+        }
+      ],
+      "name": "Borrow",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "referral",
+          "type": "uint16"
+        }
+      ],
+      "name": "Deposit",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "repayer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Repay",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Withdraw",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "interestRateMode",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint16",
+          "name": "referralCode",
+          "type": "uint16"
+        },
+        {
+          "internalType": "address",
+          "name": "onBehalfOf",
+          "type": "address"
+        }
+      ],
+      "name": "borrow",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "onBehalfOf",
+          "type": "address"
+        },
+        {
+          "internalType": "uint16",
+          "name": "referralCode",
+          "type": "uint16"
+        }
+      ],
+      "name": "deposit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        }
+      ],
+      "name": "getReserveData",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "configuration",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "liquidityIndex",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "variableBorrowIndex",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "currentLiquidityRate",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "currentVariableBorrowRate",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "currentStableBorrowRate",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint40",
+          "name": "lastUpdateTimestamp",
+          "type": "uint40"
+        },
+        {
+          "internalType": "uint16",
+          "name": "id",
+          "type": "uint16"
+        },
+        {
+          "internalType": "address",
+          "name": "aTokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "stableDebtTokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "variableDebtTokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "interestRateStrategyAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "decimals",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "onBehalfOf",
+          "type": "address"
+        }
+      ],
+      "name": "repay",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "reserveBorrowRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "reserveLiquidity",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "reserveLiquidityRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        }
+      ],
+      "name": "setReserveBorrowRate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        }
+      ],
+      "name": "setReserveLiquidityRate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userBorrows",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userDeposits",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "asset",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": "0x608080604052346015576107d2908161001a8239f35b5f80fdfe608080604052600436101561001c575b50361561001a575f80fd5b005b5f3560e01c9081630ba36dcd146106b25750806335ea6a75146105ed5780634a0297fd146105b5578063573ade81146104ba5780636079c7821461048557806369328dec1461038b57806377593cc4146103535780639880d6951461031b578063a415bcad1461020e578063de22953e146101d9578063e8eda9df146100e85763f2fdfd0a146100ac575f61000f565b346100e45760203660031901126100e4576001600160a01b036100cd6106e5565b165f526002602052602060405f2054604051908152f35b5f80fd5b346100e45760803660031901126100e4576101016106e5565b60243561010c6106fb565b610114610711565b92610120831515610722565b6001600160a01b031692831561019c5761ffff9160018060a01b03165f525f60205260405f2061015184825461078f565b9055835f52600260205260405f2061016a84825461078f565b905560405192835216917fc4bd2b15fc4073a16fbcbebdea7175494cd3c2dc36a5c53da23f3db6bde868aa60203393a4005b60405162461bcd60e51b8152602060048201526015602482015274496e76616c6964206173736574206164647265737360581b6044820152606490fd5b346100e45760403660031901126100e4576001600160a01b036101fa6106e5565b165f52600360205260243560405f20555f80f35b346100e45760a03660031901126100e4576102276106e5565b602435610232610711565b916084356001600160a01b03811691908290036100e457610254831515610722565b60018060a01b031692835f5260026020528260405f2054106102dd5761ffff915f52600160205260405f2061028a84825461078f565b9055835f52600260205260405f206102a384825461076e565b9055604051928352604435602084015216917f50fad5734007ad17bda979a8f26a9ccb6ba71122ab1b2ee270084fb458b7b30960403393a4005b60405162461bcd60e51b8152602060048201526016602482015275496e73756666696369656e74206c697175696469747960501b6044820152606490fd5b346100e45760203660031901126100e4576001600160a01b0361033c6106e5565b165f526004602052602060405f2054604051908152f35b346100e45760203660031901126100e4576001600160a01b036103746106e5565b165f526001602052602060405f2054604051908152f35b346100e45760603660031901126100e4576103a46106e5565b6024356103af6106fb565b6103ba821515610722565b335f525f6020528160405f20541061044857602092335f525f845260405f206103e484825461076e565b905560018060a01b031690815f526002845260405f2061040584825461076e565b90556040518381526001600160a01b039091169133917f3115d1449a7b732c986cba18244e897a450f61e1bb8d589cd2e69e6c8924f9f7908690a4604051908152f35b60405162461bcd60e51b8152602060048201526015602482015274496e73756666696369656e74206465706f7369747360581b6044820152606490fd5b346100e45760403660031901126100e4576001600160a01b036104a66106e5565b165f52600460205260243560405f20555f80f35b346100e45760803660031901126100e4576104d36106e5565b6024356064356001600160a01b038116908190036100e4576104f6821515610722565b805f5260016020528160405f20541061057957602092815f526001845260405f2061052284825461076e565b905560018060a01b031690815f526002845260405f2061054384825461078f565b9055604051918383527f4cdde6e09bb755c9a5589ebaec640bbfedff1362d4b255ebf8339782b9942faa853394a4604051908152f35b60405162461bcd60e51b8152602060048201526014602482015273496e73756666696369656e7420626f72726f777360601b6044820152606490fd5b346100e45760203660031901126100e4576001600160a01b036105d66106e5565b165f526003602052602060405f2054604051908152f35b346100e45760203660031901126100e4576101a06001600160a01b036106116106e5565b16805f5260046020526001600160801b0360405f205416905f5260036020526001600160801b0360405f205416604051915f83526b033b2e3c9fd0803ce800000060208401526b033b2e3c9fd0803ce80000006040840152606083015260808201525f60a082015264ffffffffff421660c08201525f60e08201525f6101008201525f6101208201525f6101408201525f6101608201526012610180820152f35b346100e45760203660031901126100e4576020906001600160a01b036106d66106e5565b165f525f825260405f20548152f35b600435906001600160a01b03821682036100e457565b604435906001600160a01b03821682036100e457565b6064359061ffff821682036100e457565b1561072957565b60405162461bcd60e51b815260206004820152601d60248201527f416d6f756e74206d7573742062652067726561746572207468616e20300000006044820152606490fd5b9190820391821161077b57565b634e487b7160e01b5f52601160045260245ffd5b9190820180921161077b5756fea2646970667358221220c9ef136669f0126b67eb55a0b318a7c19bf5fd7519fc5250360036c57b89ece764736f6c634300081c0033",
+  "deployedBytecode": "0x608080604052600436101561001c575b50361561001a575f80fd5b005b5f3560e01c9081630ba36dcd146106b25750806335ea6a75146105ed5780634a0297fd146105b5578063573ade81146104ba5780636079c7821461048557806369328dec1461038b57806377593cc4146103535780639880d6951461031b578063a415bcad1461020e578063de22953e146101d9578063e8eda9df146100e85763f2fdfd0a146100ac575f61000f565b346100e45760203660031901126100e4576001600160a01b036100cd6106e5565b165f526002602052602060405f2054604051908152f35b5f80fd5b346100e45760803660031901126100e4576101016106e5565b60243561010c6106fb565b610114610711565b92610120831515610722565b6001600160a01b031692831561019c5761ffff9160018060a01b03165f525f60205260405f2061015184825461078f565b9055835f52600260205260405f2061016a84825461078f565b905560405192835216917fc4bd2b15fc4073a16fbcbebdea7175494cd3c2dc36a5c53da23f3db6bde868aa60203393a4005b60405162461bcd60e51b8152602060048201526015602482015274496e76616c6964206173736574206164647265737360581b6044820152606490fd5b346100e45760403660031901126100e4576001600160a01b036101fa6106e5565b165f52600360205260243560405f20555f80f35b346100e45760a03660031901126100e4576102276106e5565b602435610232610711565b916084356001600160a01b03811691908290036100e457610254831515610722565b60018060a01b031692835f5260026020528260405f2054106102dd5761ffff915f52600160205260405f2061028a84825461078f565b9055835f52600260205260405f206102a384825461076e565b9055604051928352604435602084015216917f50fad5734007ad17bda979a8f26a9ccb6ba71122ab1b2ee270084fb458b7b30960403393a4005b60405162461bcd60e51b8152602060048201526016602482015275496e73756666696369656e74206c697175696469747960501b6044820152606490fd5b346100e45760203660031901126100e4576001600160a01b0361033c6106e5565b165f526004602052602060405f2054604051908152f35b346100e45760203660031901126100e4576001600160a01b036103746106e5565b165f526001602052602060405f2054604051908152f35b346100e45760603660031901126100e4576103a46106e5565b6024356103af6106fb565b6103ba821515610722565b335f525f6020528160405f20541061044857602092335f525f845260405f206103e484825461076e565b905560018060a01b031690815f526002845260405f2061040584825461076e565b90556040518381526001600160a01b039091169133917f3115d1449a7b732c986cba18244e897a450f61e1bb8d589cd2e69e6c8924f9f7908690a4604051908152f35b60405162461bcd60e51b8152602060048201526015602482015274496e73756666696369656e74206465706f7369747360581b6044820152606490fd5b346100e45760403660031901126100e4576001600160a01b036104a66106e5565b165f52600460205260243560405f20555f80f35b346100e45760803660031901126100e4576104d36106e5565b6024356064356001600160a01b038116908190036100e4576104f6821515610722565b805f5260016020528160405f20541061057957602092815f526001845260405f2061052284825461076e565b905560018060a01b031690815f526002845260405f2061054384825461078f565b9055604051918383527f4cdde6e09bb755c9a5589ebaec640bbfedff1362d4b255ebf8339782b9942faa853394a4604051908152f35b60405162461bcd60e51b8152602060048201526014602482015273496e73756666696369656e7420626f72726f777360601b6044820152606490fd5b346100e45760203660031901126100e4576001600160a01b036105d66106e5565b165f526003602052602060405f2054604051908152f35b346100e45760203660031901126100e4576101a06001600160a01b036106116106e5565b16805f5260046020526001600160801b0360405f205416905f5260036020526001600160801b0360405f205416604051915f83526b033b2e3c9fd0803ce800000060208401526b033b2e3c9fd0803ce80000006040840152606083015260808201525f60a082015264ffffffffff421660c08201525f60e08201525f6101008201525f6101208201525f6101408201525f6101608201526012610180820152f35b346100e45760203660031901126100e4576020906001600160a01b036106d66106e5565b165f525f825260405f20548152f35b600435906001600160a01b03821682036100e457565b604435906001600160a01b03821682036100e457565b6064359061ffff821682036100e457565b1561072957565b60405162461bcd60e51b815260206004820152601d60248201527f416d6f756e74206d7573742062652067726561746572207468616e20300000006044820152606490fd5b9190820391821161077b57565b634e487b7160e01b5f52601160045260245ffd5b9190820180921161077b5756fea2646970667358221220c9ef136669f0126b67eb55a0b318a7c19bf5fd7519fc5250360036c57b89ece764736f6c634300081c0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "immutableReferences": {},
+  "inputSourceName": "project/contracts/MockAaveLendingPool.sol",
+  "buildInfoId": "solc-0_8_28-2494ca7132809f3a07ebc81655140e0e311b29e3"
+}

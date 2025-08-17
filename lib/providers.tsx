@@ -43,6 +43,25 @@ interface ProposalContextType {
 const ProposalContext = createContext<ProposalContextType | undefined>(
   undefined
 );
+const evmNetworks = [
+  {
+    blockExplorerUrls: ['https://btest-2749127454006000-1.jsonrpc.sagarpc.io'],
+    chainId: '2749127454006000',
+    chainName: 'bttest',
+    iconUrls: ['https://app.dynamic.xyz/assets/networks/eth.svg'],
+    name: 'Ethereum',
+    nativeCurrency: {
+      decimals: 18,
+      name: 'bttest',
+      symbol: 'btt',
+      iconUrl: 'https://app.dynamic.xyz/assets/networks/eth.svg',
+    },
+    networkId: 1,
+
+    rpcUrls: ['https://btest-2749127454006000-1.jsonrpc.sagarpc.io'],
+    vanityName: 'saga mainnet',
+  },
+];
 
 export function ProposalProvider({ children }: { children: ReactNode }) {
   const [approvedProposals, setApprovedProposals] = useState<Proposal[]>([]);
@@ -105,6 +124,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID ||
           '2762a57b-faa4-41ce-9f16-abff9300e2c9',
         walletConnectors: [EthereumWalletConnectors],
+        overrides: { evmNetworks },
       }}
     >
       <WagmiProvider config={config}>

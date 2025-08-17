@@ -1,4 +1,5 @@
 import type { HardhatUserConfig } from "hardhat/config";
+import hardhatKeystore from "@nomicfoundation/hardhat-toolbox-viem";
 
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import { configVariable } from "hardhat/config";
@@ -11,7 +12,7 @@ const config: HardhatUserConfig = {
    * Note: A `hardhat-toolbox` like plugin for Hardhat 3 hasn't been defined yet,
    * so this list is larger than what you would normally have.
    */
-  plugins: [hardhatToolboxViemPlugin],
+  plugins: [hardhatToolboxViemPlugin, hardhatKeystore],
   solidity: {
     /*
      * Hardhat 3 supports different build profiles, allowing you to configure
@@ -27,6 +28,9 @@ const config: HardhatUserConfig = {
        */
       default: {
         version: "0.8.28",
+        settings: {
+          viaIR: true,
+        },
       },
       /*
        * The production profile is meant to be used for deployments, providing
@@ -40,6 +44,7 @@ const config: HardhatUserConfig = {
             enabled: true,
             runs: 200,
           },
+          viaIR: true,
         },
       },
     },
@@ -65,18 +70,24 @@ const config: HardhatUserConfig = {
    */
   networks: {
     hardhatMainnet: {
-      type: "edr",
+      type: "edr-simulated",
       chainType: "l1",
     },
     hardhatOp: {
-      type: "edr",
-      chainType: "optimism",
+      type: "edr-simulated",
+      chainType: "op",
     },
     sepolia: {
       type: "http",
       chainType: "l1",
       url: configVariable("SEPOLIA_RPC_URL"),
       accounts: [configVariable("SEPOLIA_PRIVATE_KEY")],
+    },
+    saganet: {
+      type: "http",
+      chainType: "l1",
+      url: configVariable("SAGANET_RPC_URL"),
+      accounts: [configVariable("SAGANET_PRIVATE_KEY")],
     },
   },
 };

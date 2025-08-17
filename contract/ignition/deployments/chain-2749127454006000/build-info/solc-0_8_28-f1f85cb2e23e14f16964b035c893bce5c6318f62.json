@@ -1,0 +1,40 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-f1f85cb2e23e14f16964b035c893bce5c6318f62",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/DAOActionExecutor.sol": "project/contracts/DAOActionExecutor.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": [],
+      "viaIR": true
+    },
+    "sources": {
+      "project/contracts/DAOActionExecutor.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\n/// @title DAOActionExecutor - Executes proposals created by OmniAgent\ncontract DAOActionExecutor {\n    event ExecutedProposal(address indexed target, uint256 value, bytes data, bytes response);\n\n    function execute(\n        address target,\n        uint256 value,\n        bytes calldata data\n    ) external returns (bytes memory) {\n        require(target != address(0), \"Invalid target\");\n\n        (bool success, bytes memory response) = target.call{value: value}(data);\n        require(success, \"Call failed\");\n\n        emit ExecutedProposal(target, value, data, response);\n        return response;\n    }\n\n    receive() external payable {}\n}\n"
+      }
+    }
+  }
+}

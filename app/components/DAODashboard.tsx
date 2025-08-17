@@ -1,12 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { useAccount, useWriteContract } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DAOActionExecutorABI from '@/lib/abi/DAOActionExecutor.json';
 import { useProposals } from '@/lib/providers';
 import { logToHedera } from '../../lib/utils';
+import {
+  executeProposal,
+  simulateTransaction,
+  waitForTransaction,
+  checkContractExists,
+  DAO_ACTION_EXECUTOR_ADDRESS,
+  encodeDeFiCall,
+  getContractAddress,
+} from '@/lib/viem-executor';
 
 interface Proposal {
   id: string;
@@ -20,11 +29,10 @@ interface Proposal {
   target?: string;
   calldata?: string;
   value?: string;
+  functionName?: string;
 }
 
-// Contract address from deployment
-const DAO_ACTION_EXECUTOR_ADDRESS =
-  '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+// Contract address is now imported from viem-executor
 
 export default function DAODashboard() {
   const { address } = useAccount();
@@ -41,9 +49,12 @@ export default function DAODashboard() {
   const [executionStatus, setExecutionStatus] = useState<{
     [key: string]: 'idle' | 'loading' | 'success' | 'error';
   }>({});
+  const [transactionHashes, setTransactionHashes] = useState<{
+    [key: string]: string;
+  }>({});
 
-  // Contract write function
-  const { writeContract, isPending: isExecuting } = useWriteContract();
+  // Execution state
+  const [isExecuting, setIsExecuting] = useState(false);
 
   const _getStatusColor = (status: string) => {
     switch (status) {
@@ -79,36 +90,33 @@ export default function DAODashboard() {
         [proposal.id]: { loading: true },
       }));
 
-      // Simulate the transaction - in a real app, you'd use a testnet or local network
-      // For demo purposes, we'll simulate different scenarios
-      setTimeout(() => {
-        const isSuccess = Math.random() > 0.3; // 70% success rate for demo
+      // Use viem to simulate the transaction
+      const simulation = await simulateTransaction(
+        proposal.target as `0x${string}`,
+        proposal.value || '0',
+        proposal.calldata as `0x${string}`
+      );
 
-        if (isSuccess) {
-          setSimulationResults((prev) => ({
-            ...prev,
-            [proposal.id]: {
-              success: true,
-              result: {
-                gas: BigInt(150000),
-                request: {
-                  gas: BigInt(150000),
-                  to: DAO_ACTION_EXECUTOR_ADDRESS,
-                  data: '0x', // Placeholder for actual calldata
-                },
-              },
-            },
-          }));
-        } else {
-          setSimulationResults((prev) => ({
-            ...prev,
-            [proposal.id]: {
-              error: 'Simulation failed: Insufficient funds or contract error',
-              details: { gas: BigInt(150000) },
-            },
-          }));
-        }
-      }, 1500);
+      if (simulation.success) {
+        setSimulationResults((prev) => ({
+          ...prev,
+          [proposal.id]: {
+            success: true,
+            result: simulation.result,
+          },
+        }));
+      } else {
+        setSimulationResults((prev) => ({
+          ...prev,
+          [proposal.id]: {
+            error:
+              simulation.error instanceof Error
+                ? simulation.error.message
+                : 'Simulation failed',
+            details: simulation.error,
+          },
+        }));
+      }
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Simulation failed';
@@ -136,36 +144,134 @@ export default function DAODashboard() {
       return;
     }
 
+    // Validate target address format
+    if (!proposal.target.startsWith('0x') || proposal.target.length !== 42) {
+      alert('Invalid target address format');
+      return;
+    }
+
+    // Validate calldata format
+    if (!proposal.calldata.startsWith('0x')) {
+      alert('Invalid calldata format');
+      return;
+    }
+
+    // Check if the target contract exists
+    const targetExists = await checkContractExists(
+      proposal.target as `0x${string}`
+    );
+    if (!targetExists) {
+      alert(`Target contract does not exist at address: ${proposal.target}`);
+      return;
+    }
+
+    // Validate and fix calldata if needed
+    const finalValue = proposal.value || '0';
+    let finalTarget = proposal.target as `0x${string}`;
+    let finalCalldata = proposal.calldata as `0x${string}`;
+
+    if (!proposal.calldata || proposal.calldata === '0x') {
+      console.log('⚠️ Empty calldata detected, generating default DeFi call...');
+
+      try {
+        // Determine protocol from target address and generate appropriate call
+        if (proposal.target === '0xc97885b31e9b230526A902963aE5c6c1cF98acEC') {
+          // Aave contract
+          finalTarget = getContractAddress('aave');
+          finalCalldata = encodeDeFiCall(
+            'aave',
+            'deposit',
+            address as `0x${string}`
+          );
+          console.log('✅ Generated Aave deposit call:', finalCalldata);
+        } else if (
+          proposal.target === '0xB64D7975c092FB1ea466f010021d41aa7F15C529'
+        ) {
+          // Uniswap contract
+          finalTarget = getContractAddress('uniswap');
+          finalCalldata = encodeDeFiCall(
+            'uniswap',
+            'swap',
+            address as `0x${string}`
+          );
+          console.log('✅ Generated Uniswap swap call:', finalCalldata);
+        } else if (
+          proposal.target === '0x8700f2999BE4492D1E972A1c0ad0FcA4dD7Ce662'
+        ) {
+          // Compound contract
+          finalTarget = getContractAddress('compound');
+          finalCalldata = encodeDeFiCall(
+            'compound',
+            'enterMarkets',
+            address as `0x${string}`
+          );
+          console.log(
+            '✅ Generated Compound enter markets call:',
+            finalCalldata
+          );
+        } else {
+          // Default to Aave deposit
+          finalTarget = getContractAddress('aave');
+          finalCalldata = encodeDeFiCall(
+            'aave',
+            'deposit',
+            address as `0x${string}`
+          );
+          console.log('✅ Generated default Aave deposit call:', finalCalldata);
+        }
+      } catch (error) {
+        console.error('Error generating DeFi call:', error);
+        // Fallback to a simple no-op call
+        finalCalldata = '0x' as `0x${string}`;
+        console.log('⚠️ Using fallback no-op call');
+      }
+    }
+
     try {
+      setIsExecuting(true);
       setExecutionStatus((prev) => ({
         ...prev,
         [proposal.id]: 'loading',
       }));
 
-      // Execute the contract call
-      await writeContract({
-        address: DAO_ACTION_EXECUTOR_ADDRESS as `0x${string}`,
-        abi: DAOActionExecutorABI.abi,
-        functionName: 'execute',
-        args: [
-          proposal.target as `0x${string}`,
-          BigInt(proposal.value || '0'),
-          proposal.calldata as `0x${string}`,
-        ],
-        chain: undefined,
-        account: address,
+      // Debug: Log proposal data
+      console.log('Executing proposal:', {
+        id: proposal.id,
+        target: proposal.target,
+        value: proposal.value,
+        calldata: proposal.calldata,
+        address: address,
       });
 
-      // Log execution to Hedera
-      const topicId = process.env.HEDERA_TOPIC_ID;
-      if (topicId) {
-        await logToHedera(
-          `Executed proposal: id=${proposal.id}, target=${proposal.target}, value=${proposal.value}, calldata=${proposal.calldata}, by=${address}`,
-          topicId
-        );
-        console.log('Logged execution to Hedera.');
-      } else {
-        console.warn('HEDERA_TOPIC_ID not set. Skipping Hedera logging.');
+      // No ownership check needed - anyone can execute proposals now
+      console.log('Current user address:', address);
+
+      // Skip simulation for Saga chain compatibility
+      console.log('Skipping simulation for Saga chain compatibility...');
+
+      // Execute the contract call using viem
+      const hash = await executeProposal(
+        address,
+        finalTarget,
+        finalValue,
+        finalCalldata
+      );
+
+      console.log('Transaction submitted with hash:', hash);
+
+      // Store transaction hash for UI display
+      setTransactionHashes((prev) => ({
+        ...prev,
+        [proposal.id]: hash,
+      }));
+
+      // Wait for transaction confirmation
+      const receipt = await waitForTransaction(hash);
+      console.log('Transaction confirmed:', receipt);
+
+      // Check if transaction was successful
+      if (receipt.status === 'reverted') {
+        throw new Error('Transaction reverted on chain');
       }
 
       // Update proposal status to executed
@@ -180,6 +286,12 @@ export default function DAODashboard() {
         ...prev,
         [proposal.id]: 'success',
       }));
+
+      // Show success message with transaction hash
+      const explorerUrl = `https://btest-2749127454006000-1.sagaexplorer.io/tx/${hash}`;
+      alert(
+        `Proposal executed successfully!\nTransaction Hash: ${hash}\nBlock Number: ${receipt.blockNumber}\n\nView on Explorer: ${explorerUrl}`
+      );
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -189,6 +301,8 @@ export default function DAODashboard() {
       }));
       console.error('Execution failed:', error);
       alert(`Execution failed: ${errorMessage}`);
+    } finally {
+      setIsExecuting(false);
     }
   };
 
@@ -417,9 +531,24 @@ export default function DAODashboard() {
                   {executionStatus[proposal.id] && (
                     <div className="mt-4">
                       {executionStatus[proposal.id] === 'success' && (
-                        <p className="text-green-400 font-semibold text-sm md:text-base">
-                          ✅ Proposal executed successfully!
-                        </p>
+                        <div className="text-green-400 font-semibold text-sm md:text-base">
+                          <p>✅ Proposal executed successfully!</p>
+                          {transactionHashes[proposal.id] && (
+                            <div className="mt-2">
+                              <p className="text-xs text-white/70 break-all">
+                                Hash: {transactionHashes[proposal.id]}
+                              </p>
+                              <a
+                                href={`https://explorer.saga.xyz/tx/${transactionHashes[proposal.id]}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 text-xs underline"
+                              >
+                                View on Explorer
+                              </a>
+                            </div>
+                          )}
+                        </div>
                       )}
                       {executionStatus[proposal.id] === 'error' && (
                         <p className="text-red-400 font-semibold text-sm md:text-base">

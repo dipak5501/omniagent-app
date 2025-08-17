@@ -1,0 +1,351 @@
+{
+  "_format": "hh3-artifact-1",
+  "contractName": "MockUniswapV3Router",
+  "sourceName": "contracts/MockUniswapV3Router.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "tokenOut",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amountOut",
+          "type": "uint256"
+        }
+      ],
+      "name": "Swap",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "path",
+              "type": "bytes"
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountOutMinimum",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct MockUniswapV3Router.ExactInputParams",
+          "name": "params",
+          "type": "tuple"
+        }
+      ],
+      "name": "exactInput",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amountOut",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "tokenIn",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "tokenOut",
+              "type": "address"
+            },
+            {
+              "internalType": "uint24",
+              "name": "fee",
+              "type": "uint24"
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountIn",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountOutMinimum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint160",
+              "name": "sqrtPriceLimitX96",
+              "type": "uint160"
+            }
+          ],
+          "internalType": "struct MockUniswapV3Router.ExactInputSingleParams",
+          "name": "params",
+          "type": "tuple"
+        }
+      ],
+      "name": "exactInputSingle",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amountOut",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "tokenIn",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "tokenOut",
+              "type": "address"
+            },
+            {
+              "internalType": "uint24",
+              "name": "fee",
+              "type": "uint24"
+            },
+            {
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountOut",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amountInMaximum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint160",
+              "name": "sqrtPriceLimitX96",
+              "type": "uint160"
+            }
+          ],
+          "internalType": "struct MockUniswapV3Router.ExactOutputSingleParams",
+          "name": "params",
+          "type": "tuple"
+        }
+      ],
+      "name": "exactOutputSingle",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "mockLiquidity",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "mockRates",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenOut",
+          "type": "address"
+        },
+        {
+          "internalType": "uint24",
+          "name": "fee",
+          "type": "uint24"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amountIn",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint160",
+          "name": "sqrtPriceLimitX96",
+          "type": "uint160"
+        }
+      ],
+      "name": "quoteExactInputSingle",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "amountOut",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "liquidity",
+          "type": "uint256"
+        }
+      ],
+      "name": "setMockLiquidity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenIn",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenOut",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rate",
+          "type": "uint256"
+        }
+      ],
+      "name": "setMockRate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": "0x608060405234608c57670de0b6b3a76400007e9316a6b27b778fc9c4cd520e332fce845aa0089877f87cfe8c1d77fa4cc1108190555f80527fada5013122d395ba3c54772283fb069b10426056ef8ca54750cb9bb552a59e7d6020527f871b3b0713ea5d7fd1f75a811c349209996193f3a2535cdfd79d35416bf80123556040516106cb90816100918239f35b5f80fdfe608080604052600436101561001c575b50361561001a575f80fd5b005b5f3560e01c90816303b1fb0a14610552575080632a24688914610506578063414bf389146103cc5780634a3c2e91146103975780635bb286f614610349578063c04b8d5914610292578063db3e2198146101215763f7729d4314610080575f61000f565b3461011d5760a036600319011261011d57610099610586565b6100a161059c565b9060443562ffffff81160361011d576084356001600160a01b0381160361011d5760018060a01b03165f525f60205260405f209060018060a01b03165f5260205260405f2054801561010e575b670de0b6b3a7640000610105602092606435610682565b04604051908152f35b50670de0b6b3a76400006100ee565b5f80fd5b61010036600319011261011d5761013c6084354211156105b2565b60a435801561014b81156105f4565b6001600160a01b0361015b610640565b165f525f60205260405f2061016e610656565b60018060a01b03165f5260205260405f2054908115610282575b670de0b6b3a7640000830290838204670de0b6b3a764000014171561026e57811561025a570460c435811161021c576020916101c2610640565b6101ca610656565b917fcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e4606260406101f661066c565b8151878152888101949094526001600160a01b03908116958116941692a4604051908152f35b60405162461bcd60e51b8152602060048201526016602482015275115e18d95cdcda5d99481a5b9c1d5d08185b5bdd5b9d60521b6044820152606490fd5b634e487b7160e01b5f52601260045260245ffd5b634e487b7160e01b5f52601160045260245ffd5b670de0b6b3a76400009150610188565b602036600319011261011d5760043567ffffffffffffffff811161011d5760a0600319823603011261011d576102ce60448201354211156105b2565b60648101359081156102e081156105f4565b605f830290838204605f14171561026e576064602491049101359160018060a01b0383169081840361011d575f7fcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062604082936020975081519081528688820152a4604051908152f35b3461011d57604036600319011261011d57610362610586565b61036a61059c565b6001600160a01b039182165f90815260208181526040808320949093168252928352819020549051908152f35b3461011d57604036600319011261011d576001600160a01b036103b8610586565b165f52600160205260243560405f20555f80f35b61010036600319011261011d576103e76084354211156105b2565b60a4356103f58115156105f4565b6001600160a01b03610405610640565b165f525f60205260405f20610418610656565b60018060a01b03165f5260205260405f205480156104f7575b610444670de0b6b3a76400009183610682565b0460c43581106104b257602091610459610640565b610461610656565b917fcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062604061048d61066c565b81519384528784018790526001600160a01b03908116958116941692a4604051908152f35b60405162461bcd60e51b815260206004820152601a60248201527f496e73756666696369656e74206f757470757420616d6f756e740000000000006044820152606490fd5b50670de0b6b3a7640000610431565b3461011d57606036600319011261011d5761051f610586565b61052761059c565b6001600160a01b039182165f9081526020818152604080832093909416825291909152206044359055005b3461011d57602036600319011261011d576020906001600160a01b03610576610586565b165f526001825260405f20548152f35b600435906001600160a01b038216820361011d57565b602435906001600160a01b038216820361011d57565b156105b957565b60405162461bcd60e51b8152602060048201526013602482015272151c985b9cd858dd1a5bdb881d1bdbc81bdb19606a1b6044820152606490fd5b156105fb57565b60405162461bcd60e51b815260206004820152601d60248201527f416d6f756e74206d7573742062652067726561746572207468616e20300000006044820152606490fd5b6004356001600160a01b038116810361011d5790565b6024356001600160a01b038116810361011d5790565b6064356001600160a01b038116810361011d5790565b8181029291811591840414171561026e5756fea2646970667358221220e51c23f8321c0a4d3e1b056246bf3a28ac5af405e8ac10d2c1b4193d4526359264736f6c634300081c0033",
+  "deployedBytecode": "0x608080604052600436101561001c575b50361561001a575f80fd5b005b5f3560e01c90816303b1fb0a14610552575080632a24688914610506578063414bf389146103cc5780634a3c2e91146103975780635bb286f614610349578063c04b8d5914610292578063db3e2198146101215763f7729d4314610080575f61000f565b3461011d5760a036600319011261011d57610099610586565b6100a161059c565b9060443562ffffff81160361011d576084356001600160a01b0381160361011d5760018060a01b03165f525f60205260405f209060018060a01b03165f5260205260405f2054801561010e575b670de0b6b3a7640000610105602092606435610682565b04604051908152f35b50670de0b6b3a76400006100ee565b5f80fd5b61010036600319011261011d5761013c6084354211156105b2565b60a435801561014b81156105f4565b6001600160a01b0361015b610640565b165f525f60205260405f2061016e610656565b60018060a01b03165f5260205260405f2054908115610282575b670de0b6b3a7640000830290838204670de0b6b3a764000014171561026e57811561025a570460c435811161021c576020916101c2610640565b6101ca610656565b917fcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e4606260406101f661066c565b8151878152888101949094526001600160a01b03908116958116941692a4604051908152f35b60405162461bcd60e51b8152602060048201526016602482015275115e18d95cdcda5d99481a5b9c1d5d08185b5bdd5b9d60521b6044820152606490fd5b634e487b7160e01b5f52601260045260245ffd5b634e487b7160e01b5f52601160045260245ffd5b670de0b6b3a76400009150610188565b602036600319011261011d5760043567ffffffffffffffff811161011d5760a0600319823603011261011d576102ce60448201354211156105b2565b60648101359081156102e081156105f4565b605f830290838204605f14171561026e576064602491049101359160018060a01b0383169081840361011d575f7fcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062604082936020975081519081528688820152a4604051908152f35b3461011d57604036600319011261011d57610362610586565b61036a61059c565b6001600160a01b039182165f90815260208181526040808320949093168252928352819020549051908152f35b3461011d57604036600319011261011d576001600160a01b036103b8610586565b165f52600160205260243560405f20555f80f35b61010036600319011261011d576103e76084354211156105b2565b60a4356103f58115156105f4565b6001600160a01b03610405610640565b165f525f60205260405f20610418610656565b60018060a01b03165f5260205260405f205480156104f7575b610444670de0b6b3a76400009183610682565b0460c43581106104b257602091610459610640565b610461610656565b917fcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062604061048d61066c565b81519384528784018790526001600160a01b03908116958116941692a4604051908152f35b60405162461bcd60e51b815260206004820152601a60248201527f496e73756666696369656e74206f757470757420616d6f756e740000000000006044820152606490fd5b50670de0b6b3a7640000610431565b3461011d57606036600319011261011d5761051f610586565b61052761059c565b6001600160a01b039182165f9081526020818152604080832093909416825291909152206044359055005b3461011d57602036600319011261011d576020906001600160a01b03610576610586565b165f526001825260405f20548152f35b600435906001600160a01b038216820361011d57565b602435906001600160a01b038216820361011d57565b156105b957565b60405162461bcd60e51b8152602060048201526013602482015272151c985b9cd858dd1a5bdb881d1bdbc81bdb19606a1b6044820152606490fd5b156105fb57565b60405162461bcd60e51b815260206004820152601d60248201527f416d6f756e74206d7573742062652067726561746572207468616e20300000006044820152606490fd5b6004356001600160a01b038116810361011d5790565b6024356001600160a01b038116810361011d5790565b6064356001600160a01b038116810361011d5790565b8181029291811591840414171561026e5756fea2646970667358221220e51c23f8321c0a4d3e1b056246bf3a28ac5af405e8ac10d2c1b4193d4526359264736f6c634300081c0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "immutableReferences": {},
+  "inputSourceName": "project/contracts/MockUniswapV3Router.sol",
+  "buildInfoId": "solc-0_8_28-4f631b7a1ef1cc83bd6783ae5f3d93474ae98755"
+}

@@ -92,7 +92,7 @@ Respond in a clear, structured format.
 
   async generateProposal(): Promise<GovernanceProposal> {
     const prompt = `
-You are an expert DAO governance strategist. Based on the following treasury data, generate a specific governance proposal:
+You are an expert DAO governance strategist. Based on the following treasury data, generate a specific governance proposal for execution on Saga chain:
 
 Treasury Assets:
 ${this.treasury.assets
@@ -105,30 +105,59 @@ ${this.treasury.assets
 Goals: ${this.treasury.goals?.join(', ') || 'Optimize treasury yield and efficiency'}
 Risk Tolerance: ${this.treasury.riskTolerance || 'medium'}
 
+      IMPORTANT: This proposal will be executed on Saga chain. Use these deployed mock contract addresses:
+      
+      - Mock Aave LendingPool: 0xc97885b31e9b230526A902963aE5c6c1cF98acEC (for lending operations)
+      - Mock Uniswap Router: 0xB64D7975c092FB1ea466f010021d41aa7F15C529 (for swaps)
+      - Mock Compound: 0x8700f2999BE4492D1E972A1c0ad0FcA4dD7Ce662 (for lending)
+      - Mock USDC: 0x2D82Ca4d232f79e259c874a4C2131Fc1D581fedf (for token operations)
+
+      CRITICAL: Saga chain has limited EVM opcode support. Use only basic function calls:
+      - For Aave: use "deposit" function only
+      - For Uniswap: use "exactInputSingle" function only  
+      - For Compound: use "enterMarkets" function only
+      - Avoid complex parameter structures or advanced opcodes
+
 Generate a specific proposal that includes:
 1. A clear action (staking, swapping, lending, etc.)
-2. Source and target chains (consider gas efficiency)
-3. Specific contract addresses and function calls
-4. Risk assessment and confidence level
-5. Detailed rationale
+2. Target chain should be "saga"
+3. Use the mock contract addresses above directly
+4. Specific function calls that work with the mock contracts
+5. Risk assessment and confidence level
+6. Detailed rationale
 
 Return ONLY a valid JSON object in this exact format:
 {
   "title": "Brief descriptive title",
   "description": "Detailed description of the action",
-  "sourceChain": "ethereum|polygon|arbitrum|optimism|base",
-  "targetChain": "ethereum|polygon|arbitrum|optimism|base", 
-  "targetContract": "0x... (contract address)",
-  "functionName": "functionName",
-  "payable": true/false,
-  "arguments": [],
+  "sourceChain": "ethereum",
+  "targetChain": "saga", 
+  "targetContract": "0x4dEb592A7CD57a4b4f4bBAB6A0050F6776697D04 (use deployed mock addresses above)",
+  "functionName": "deposit",
+  "payable": false,
+        "arguments": ["0x2D82Ca4d232f79e259c874a4C2131Fc1D581fedf", "1000000", "0x77937516b5E9d01771F6D11466962975785CE57B", "0"],
   "valueInETH": 0,
-  "support": true/false,
-  "confidence": 0.0-1.0,
+  "support": true,
+  "confidence": 0.9,
   "reason": "Detailed rationale for this proposal"
 }
 
-Focus on practical, executable actions with real contract addresses and function names.
+CRITICAL REQUIREMENTS:
+1. ALWAYS use a real function name from the contract (deposit, borrow, withdraw, swap, etc.)
+2. ALWAYS provide proper arguments for the function
+3. NEVER use empty arguments array []
+4. NEVER use placeholder function names like "functionName"
+5. Use the correct contract address based on the function:
+   - For Aave functions (deposit, borrow, withdraw): use Mock Aave address 0x4dEb592A7CD57a4b4f4bBAB6A0050F6776697D04
+   - For Uniswap functions (swap, exactInputSingle): use Mock Uniswap address 0xBCD5c12B60383f99aBCED8570b36C20f1050AAAC
+   - For Compound functions (enterMarkets, exitMarket): use Mock Compound address 0x18B7171F32cE584067FA3e253763345Ed7e11a23
+
+EXAMPLE FUNCTION CALLS:
+- Aave deposit: functionName="deposit", arguments=["0x0781597f78F81F0112741596ECC8eB079d538f57", "1000000000", "0x77937516b5E9d01771F6D11466962975785CE57B", "0"]
+- Uniswap swap: functionName="exactInputSingle", arguments=[{"tokenIn":"0x0000000000000000000000000000000000000000","tokenOut":"0x0781597f78F81F0112741596ECC8eB079d538f57","fee":"3000","recipient":"0x77937516b5E9d01771F6D11466962975785CE57B","deadline":"1735689600","amountIn":"1000000000000000000","amountOutMinimum":"0","sqrtPriceLimitX96":"0"}]
+- Compound enter: functionName="enterMarkets", arguments=[["0x0781597f78F81F0112741596ECC8eB079d538f57"]]
+
+Focus on practical, executable actions using the mock contracts on Saga chain.
 `;
 
     try {

@@ -1,0 +1,8 @@
+{
+  "MockContractsWithUSDCModule#MockAaveLendingPool": "0xc97885b31e9b230526A902963aE5c6c1cF98acEC",
+  "MockContractsWithUSDCModule#MockCompoundComptroller": "0x8700f2999BE4492D1E972A1c0ad0FcA4dD7Ce662",
+  "MockContractsWithUSDCModule#MockUSDC": "0x2D82Ca4d232f79e259c874a4C2131Fc1D581fedf",
+  "MockContractsWithUSDCModule#MockUniswapV3Router": "0xB64D7975c092FB1ea466f010021d41aa7F15C529",
+  "DAOActionExecutorModule#DAOActionExecutor": "0x1f28D522caFb86b1A7b64D4CB02b9d214788977e",
+  "DOAGovernanceModule#DAOGovernance": "0xBe09897E510F89eB9D5622567c53E94F3f109f7F"
+}

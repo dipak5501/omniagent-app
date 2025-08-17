@@ -1,0 +1,40 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-656dbdba6cd08c4aeba81d4274bff42a9306d4e4",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/MockCompoundComptroller.sol": "project/contracts/MockCompoundComptroller.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": [],
+      "viaIR": true
+    },
+    "sources": {
+      "project/contracts/MockCompoundComptroller.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\n/// @title MockCompoundComptroller - Mock implementation of Compound Comptroller for Saga chain testing\ncontract MockCompoundComptroller {\n    mapping(address => bool) public markets;\n    mapping(address => uint256) public borrowCaps;\n    mapping(address => uint256) public supplyCaps;\n    mapping(address => uint256) public borrowRates;\n    mapping(address => uint256) public supplyRates;\n    \n    event MarketEntered(address cToken, address account);\n    event MarketExited(address cToken, address account);\n    event BorrowCapSet(address cToken, uint256 newCap);\n    event SupplyCapSet(address cToken, uint256 newCap);\n    \n    constructor() {}\n    \n    function enterMarkets(address[] calldata cTokens) external returns (uint256[] memory) {\n        uint256[] memory results = new uint256[](cTokens.length);\n        \n        for (uint256 i = 0; i < cTokens.length; i++) {\n            markets[cTokens[i]] = true;\n            results[i] = 0; // 0 = success\n            emit MarketEntered(cTokens[i], msg.sender);\n        }\n        \n        return results;\n    }\n    \n    function exitMarket(address cToken) external returns (uint256) {\n        require(markets[cToken], \"Market not entered\");\n        \n        // Mock exit logic - in real Compound this would check for borrows\n        markets[cToken] = false;\n        emit MarketExited(cToken, msg.sender);\n        \n        return 0; // 0 = success\n    }\n    \n    function getAccountLiquidity(address /* account */) external pure returns (uint256, uint256, uint256) {\n        // Mock liquidity calculation\n        return (1000e18, 500e18, 500e18); // total, borrowable, excess\n    }\n    \n    function getAssetsIn(address /* account */) external pure returns (address[] memory) {\n        // Mock implementation - return empty array for simplicity\n        return new address[](0);\n    }\n    \n    function checkMembership(address /* account */, address cToken) external view returns (bool) {\n        return markets[cToken];\n    }\n    \n    function getBorrowCap(address cToken) external view returns (uint256) {\n        return borrowCaps[cToken];\n    }\n    \n    function getSupplyCap(address cToken) external view returns (uint256) {\n        return supplyCaps[cToken];\n    }\n    \n    function getBorrowRate(address cToken) external view returns (uint256) {\n        return borrowRates[cToken];\n    }\n    \n    function getSupplyRate(address cToken) external view returns (uint256) {\n        return supplyRates[cToken];\n    }\n    \n    // Admin functions to set caps and rates for testing\n    function setBorrowCap(address cToken, uint256 newCap) external {\n        borrowCaps[cToken] = newCap;\n        emit BorrowCapSet(cToken, newCap);\n    }\n    \n    function setSupplyCap(address cToken, uint256 newCap) external {\n        supplyCaps[cToken] = newCap;\n        emit SupplyCapSet(cToken, newCap);\n    }\n    \n    function setBorrowRate(address cToken, uint256 rate) external {\n        borrowRates[cToken] = rate;\n    }\n    \n    function setSupplyRate(address cToken, uint256 rate) external {\n        supplyRates[cToken] = rate;\n    }\n    \n    function addMarket(address cToken) external {\n        markets[cToken] = true;\n    }\n    \n    function removeMarket(address cToken) external {\n        markets[cToken] = false;\n    }\n    \n    // Allow the contract to receive ETH\n    receive() external payable {}\n}\n"
+      }
+    }
+  }
+}
