@@ -6,8 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false,
-    "includes": ["**", "!**/contract/**"]
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,
@@ -21,7 +20,7 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "noUnusedVariables": "warn"
+        "noUnusedVariables": "error"
       },
       "suspicious": {
         "noExplicitAny": "warn"
